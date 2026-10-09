@@ -24,38 +24,16 @@
     <meta property="og:image:alt" content="Un croissant de lune et une planète dorée de part et d'autre d'une éclipse">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#06070d">
-    <!-- Thème mémorisé appliqué avant le premier rendu (pas de flash) -->
-    <script>
-        try { document.documentElement.dataset.theme = localStorage.getItem('theme') === 'day' ? 'day' : 'night'; } catch (e) {}
-    </script>
+    <!-- Sécurité : seules les ressources du site lui-même sont autorisées (aucun script tiers ni inline) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="assets/js/theme-init.js"></script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Couleurs branchées sur les variables CSS du thème (Lune / Soleil)
-        const tone = (v) => `rgb(var(${v}) / <alpha-value>)`;
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        white: tone('--ink'),
-                        onsun: tone('--on-accent'),
-                        space: { 950: tone('--night'), 900: tone('--night-900'), 800: tone('--night-800'), 700: tone('--night-700') },
-                        gold: { 300: tone('--accent-300'), 400: tone('--accent-400'), 500: tone('--accent-500'), 600: tone('--accent-600') },
-                        moon: { 300: tone('--moon-300'), 400: tone('--moon-400'), 500: tone('--moon-500') },
-                    },
-                    fontFamily: {
-                        display: ['Roboto', 'system-ui', 'sans-serif'],
-                        sans: ['Roboto', 'system-ui', 'sans-serif'],
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="stylesheet" href="assets/css/style.css?v=15">
+    <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/css/style.css?v=16">
+    <!-- Tailwind compilé (voir tailwind.config.js) ; chargé après style.css comme l'ancien CDN -->
+    <link rel="stylesheet" href="assets/css/tailwind.css?v=1">
 </head>
 
 <body class="bg-space-950 font-sans text-white/80 antialiased selection:bg-gold-500/40 selection:text-white">
@@ -547,6 +525,6 @@
         </div>
     </footer>
 
-    <script src="assets/js/main.js?v=7"></script>
+    <script src="assets/js/main.js?v=8"></script>
 </body>
 </html>

@@ -7,6 +7,33 @@
    (rgb(var(--x) / <alpha-value>)).
    ========================================================================== */
 
+/* ---------- Roboto hébergée localement (police variable, graisses 300 à 600) ---------- */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300 600;
+    font-display: swap;
+    src: url(../fonts/roboto-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300 600;
+    font-display: swap;
+    src: url(../fonts/roboto-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* Flèches → et ↗ des liens */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300 600;
+    font-display: swap;
+    src: url(../fonts/roboto-symbols.woff2) format('woff2');
+    unicode-range: U+2190-2199;
+}
+
 :root,
 [data-theme="night"] {
     --night:     6 7 13;      /* fond */
@@ -159,9 +186,11 @@ main > section { overflow-x: clip; }
         radial-gradient(1.5px 1.5px at 330px 230px, rgb(var(--moon-300) / .6), transparent),
         radial-gradient(1px 1px at 60px 260px, rgb(var(--star) / .3), transparent);
     background-size: 380px 300px;
+    /* Scintillement par l'opacité (pas de filter) : animé par le GPU, sans repeindre le calque plein écran */
     animation: twinkle 8s ease-in-out infinite alternate;
+    will-change: opacity;
 }
-@keyframes twinkle { from { filter: brightness(.6); } to { filter: brightness(1.15); } }
+@keyframes twinkle { from { opacity: calc(var(--stars-opacity) * .55); } to { opacity: var(--stars-opacity); } }
 
 /* ---------- Hero ---------- */
 /* Zoom avant / arrière très lent, en boucle, centré sur la planète */

@@ -12,7 +12,12 @@ const onScroll = () => {
     });
     links.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${current}`));
 };
-window.addEventListener('scroll', onScroll, { passive: true });
+// Au plus un calcul par image affichée, quel que soit le nombre d'événements scroll
+let navFrame = 0;
+window.addEventListener('scroll', () => {
+    if (navFrame) return;
+    navFrame = requestAnimationFrame(() => { navFrame = 0; onScroll(); });
+}, { passive: true });
 onScroll();
 
 // Menu mobile
@@ -48,7 +53,9 @@ const type = () => {
     }
     setTimeout(type, delay);
 };
-type();
+// Animations réduites demandées : premier mot affiché d'un coup, sans boucle
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) typed.textContent = words[0];
+else type();
 
 // Apparition au scroll
 const observer = new IntersectionObserver((entries) => {
