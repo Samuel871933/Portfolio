@@ -1,0 +1,7 @@
+{
+  "tool": "image_gen (outil intégré)",
+  "prompts": {
+    "contact": "Use case: stylized-concept. Asset type: decorative background for contact panel on dark developer portfolio. Square cinematic astronomical artwork: dark cratered moon with a thin luminous warm golden yellow crescent along its upper right edge, subtle fine orbital dust drifting into surrounding nearly black navy space. Moon in lower left of composition, upper and right regions dark negative space for overlaid website text. Refined realistic rocky textures, restrained glow, elegant atmosphere. No text, no logos, no watermark.",
+    "favicon": "Use case: logo-brand. Asset type: square favicon for a developer portfolio with a space theme. Create a bold minimalist golden yellow crescent moon on a solid near-black navy square background. Crescent centered, fills 75 percent of square, clean smooth thick silhouette, simple flat graphic, very legible at 16 pixels. One tiny four-point golden star inside the open side of the crescent. No gradients, no texture, no text, no letters, no border, no watermark."
+  }
+}
