@@ -10,7 +10,28 @@
     --space-900: #0a0a12;
 }
 
-html { scroll-padding-top: 80px; }
+html { scroll-padding-top: 80px; color-scheme: dark; }
+
+/* ---------- Barre de défilement ---------- */
+/* Chrome, Edge, Safari, Opera */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--space-950); }
+::-webkit-scrollbar-thumb {
+    background: var(--gold-500);
+    border: 2px solid var(--space-950);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gold-300); }
+::-webkit-scrollbar-corner { background: var(--space-950); }
+
+/* Firefox — réservé aux navigateurs sans ::-webkit-scrollbar, car dans
+   Chrome 121+ scrollbar-color désactive les règles WebKit ci-dessus. */
+@supports not selector(::-webkit-scrollbar) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--gold-500) var(--space-950);
+    }
+}
 
 /* Empêche tout débordement horizontal (halos, animations...) */
 html, body { overflow-x: clip; max-width: 100%; }
