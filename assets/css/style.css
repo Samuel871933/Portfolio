@@ -168,7 +168,7 @@ main > section { overflow-x: clip; }
 .hero-bg {
     pointer-events: none;
     transform-origin: 70% 50%;
-    animation: drift 40s ease-in-out infinite;
+    animation: drift 10s ease-in-out infinite;
     will-change: transform;
 }
 .hero-bg img {
