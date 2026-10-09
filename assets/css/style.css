@@ -1,35 +1,123 @@
 /* ==========================================================================
    Portfolio Samuel RAPPY — styles complémentaires à Tailwind
+   Thème « Sol & Luna » : la dualité entre l'ombre et la lumière.
+   - Lune (nuit, défaut) : nuit profonde, clair de lune argenté, éclats d'or.
+   - Soleil (jour)       : ivoire solaire, encre d'ombre, or bruni.
+   Les couleurs sont des triplets RGB pour permettre l'opacité Tailwind
+   (rgb(var(--x) / <alpha-value>)).
    ========================================================================== */
 
-:root {
-    --gold-300: #ffe17a;
-    --gold-400: #ffd23f;
-    --gold-500: #f5c518;
-    --space-950: #05050a;
-    --space-900: #0a0a12;
+:root,
+[data-theme="night"] {
+    --night:     6 7 13;      /* fond */
+    --night-900: 11 12 20;
+    --night-800: 18 20 31;
+    --night-700: 28 31 46;
+    --ink:       236 238 245; /* texte principal (clair de lune) */
+    --on-sun:    10 9 6;      /* texte posé sur l'or */
+
+    --sun-300: 255 224 138;
+    --sun-400: 246 205 92;
+    --sun-500: 236 188 60;
+    --sun-600: 200 150 26;
+
+    --moon-300: 227 232 242;
+    --moon-400: 183 193 214;
+    --moon-500: 168 180 204;
+
+    --star: 255 255 255;
+    --halo-sun: 236 178 60;
+    --halo-moon: 130 155 215;
+    --halo-strength: .085;
+
+    /* Ambiance au défilement (--sun-amt et --night pilotés par main.js) :
+       fond chaud de crépuscule en haut, bleu nuit profond en bas */
+    --sun-amt: 1;
+    --bg-sun:  9 8 10;
+    --bg-moon: 5 6 14;
+    --stars-opacity: calc(.6 + .4 * (1 - var(--sun-amt)));
+
+    /* Dualité gauche / droite : la lune à gauche, le soleil à droite */
+    --sun-x: 100%;
+    --moon-x: 0%;
+    --dir-x: 90deg;
+    --dir-tilt: 105deg;
+    --dir-diag: 135deg;
+    color-scheme: dark;
 }
 
-html { scroll-padding-top: 80px; color-scheme: dark; }
+[data-theme="day"] {
+    --night:     246 241 230;
+    --night-900: 239 232 216;
+    --night-800: 230 221 201;
+    --night-700: 216 205 182;
+    --ink:       22 20 30;
+    --on-sun:    24 18 6;
+
+    --sun-300: 128 88 8;
+    --sun-400: 160 113 10;
+    --sun-500: 196 145 28;
+    --sun-600: 150 105 10;
+
+    --moon-300: 46 54 84;
+    --moon-400: 74 83 116;
+    --moon-500: 84 93 126;
+
+    --star: 176 128 20;
+    --halo-sun: 240 170 40;
+    --halo-moon: 80 95 150;
+    --halo-strength: .07;
+
+    /* Aube : ivoire neutre en haut, ivoire doré en bas */
+    --sun-amt: 0;
+    --bg-sun:  247 240 226;
+    --bg-moon: 242 240 236;
+    --stars-opacity: calc(.3 + .15 * (1 - var(--sun-amt)));
+
+    /* Dualité inversée : le soleil à gauche, la lune à droite */
+    --sun-x: 0%;
+    --moon-x: 100%;
+    --dir-x: 270deg;
+    --dir-tilt: 255deg;
+    --dir-diag: 225deg;
+    color-scheme: light;
+}
+
+/* Accent d'ambiance : glisse entre l'or et l'argent au fil du défilement
+   (calculé par main.js ; par défaut, l'or du soleil). */
+:root {
+    --accent-300: var(--sun-300);
+    --accent-400: var(--sun-400);
+    --accent-500: var(--sun-500);
+    --accent-600: var(--sun-600);
+    --on-accent: var(--on-sun);
+}
+
+html { scroll-padding-top: 80px; }
+body { transition: background-color .25s linear, color .6s ease; }
+
+/* ---------- Transition de thème (View Transitions) ---------- */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 
 /* ---------- Barre de défilement ---------- */
 /* Chrome, Edge, Safari, Opera */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--space-950); }
+::-webkit-scrollbar-track { background: rgb(var(--night)); }
 ::-webkit-scrollbar-thumb {
-    background: var(--gold-500);
-    border: 2px solid var(--space-950);
+    background: linear-gradient(rgb(var(--sun-500)), rgb(var(--moon-400)));
+    border: 2px solid rgb(var(--night));
     border-radius: 6px;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--gold-300); }
-::-webkit-scrollbar-corner { background: var(--space-950); }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent-400)); }
+::-webkit-scrollbar-corner { background: rgb(var(--night)); }
 
 /* Firefox — réservé aux navigateurs sans ::-webkit-scrollbar, car dans
    Chrome 121+ scrollbar-color désactive les règles WebKit ci-dessus. */
 @supports not selector(::-webkit-scrollbar) {
     * {
         scrollbar-width: thin;
-        scrollbar-color: var(--gold-500) var(--space-950);
+        scrollbar-color: rgb(var(--accent-500)) rgb(var(--night));
     }
 }
 
@@ -37,23 +125,43 @@ html { scroll-padding-top: 80px; color-scheme: dark; }
 html, body { overflow-x: clip; max-width: 100%; }
 main > section { overflow-x: clip; }
 
-/* ---------- Fond étoilé ---------- */
+/* ---------- Ciel : halos + étoiles (ou poussière d'or le jour) ---------- */
 .stars {
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
+}
+.stars::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* L'astre dominant s'élève et s'intensifie, l'autre descend et s'éteint */
+    background:
+        radial-gradient(circle min(55vmax, 900px) at var(--sun-x) calc(80% - 60% * var(--sun-amt)),
+            rgb(var(--halo-sun) / calc(.015 + var(--halo-strength) * var(--sun-amt))), transparent 65%),
+        radial-gradient(circle min(50vmax, 820px) at var(--moon-x) calc(20% + 60% * var(--sun-amt)),
+            rgb(var(--halo-moon) / calc(.015 + var(--halo-strength) * (1 - var(--sun-amt)))), transparent 65%),
+        linear-gradient(var(--dir-x),
+            rgb(var(--halo-moon) / calc(.01 + .02 * (1 - var(--sun-amt)))), transparent 30% 70%,
+            rgb(var(--halo-sun) / calc(.01 + .02 * var(--sun-amt))));
+}
+.stars::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: var(--stars-opacity);
     background-image:
-        radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,.7), transparent),
-        radial-gradient(1px 1px at 120px 80px, rgba(255,255,255,.5), transparent),
-        radial-gradient(1.5px 1.5px at 200px 150px, rgba(255,225,122,.8), transparent),
-        radial-gradient(1px 1px at 280px 40px, rgba(255,255,255,.4), transparent),
-        radial-gradient(1px 1px at 340px 220px, rgba(255,255,255,.6), transparent),
-        radial-gradient(1px 1px at 60px 260px, rgba(255,255,255,.3), transparent);
+        radial-gradient(1px 1px at 20px 30px, rgb(var(--star) / .7), transparent),
+        radial-gradient(1px 1px at 120px 80px, rgb(var(--star) / .5), transparent),
+        radial-gradient(1.5px 1.5px at 200px 150px, rgb(var(--sun-300) / .8), transparent),
+        radial-gradient(1px 1px at 280px 40px, rgb(var(--star) / .4), transparent),
+        radial-gradient(1.5px 1.5px at 330px 230px, rgb(var(--moon-300) / .6), transparent),
+        radial-gradient(1px 1px at 60px 260px, rgb(var(--star) / .3), transparent);
     background-size: 380px 300px;
     animation: twinkle 8s ease-in-out infinite alternate;
 }
-@keyframes twinkle { from { opacity: .5; } to { opacity: 1; } }
+@keyframes twinkle { from { filter: brightness(.6); } to { filter: brightness(1.15); } }
 
 /* ---------- Hero ---------- */
 /* Zoom avant / arrière très lent, en boucle, centré sur la planète */
@@ -69,6 +177,10 @@ main > section { overflow-x: clip; }
     object-fit: cover;
     object-position: 70% center;
 }
+/* Un visuel par thème : seul celui du thème actif est affiché (et chargé) */
+.hero-day { display: none; }
+[data-theme="day"] .hero-night { display: none; }
+[data-theme="day"] .hero-day { display: block; }
 
 @media (max-width: 767px) {
     .hero-bg img { object-position: 62% center; opacity: .7; }
@@ -78,31 +190,45 @@ main > section { overflow-x: clip; }
     50%      { transform: scale(1.15); }
 }
 
+/* Éclipse décorative : un disque d'ombre qui croise un anneau de lumière */
+.eclipse {
+    position: absolute;
+    width: 22rem; height: 22rem;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, rgb(var(--night)) 62%, transparent 63%);
+    box-shadow:
+        inset 0 0 0 1px rgb(var(--ink) / .05),
+        -14px -10px 60px -22px rgb(var(--moon-300) / .55),
+        18px 12px 80px -18px rgb(var(--sun-500) / .55);
+    animation: corona 14s ease-in-out infinite alternate;
+}
+@keyframes corona {
+    from { box-shadow: inset 0 0 0 1px rgb(var(--ink) / .05), -14px -10px 60px -22px rgb(var(--moon-300) / .45), 18px 12px 80px -18px rgb(var(--sun-500) / .45); }
+    to   { box-shadow: inset 0 0 0 1px rgb(var(--ink) / .05), -20px -14px 70px -18px rgb(var(--moon-300) / .6), 24px 16px 90px -14px rgb(var(--sun-500) / .65); }
+}
+
 .section-title .text-gradient { font-weight: 600; }
 
+/* Le dégradé signature : du clair de lune à l'or du soleil */
 .text-gradient {
-    background: linear-gradient(110deg, #fff1b8, var(--gold-400) 50%, var(--gold-500));
+    background: linear-gradient(var(--dir-tilt), rgb(var(--moon-300)) 0%, rgb(var(--moon-400)) 28%, rgb(var(--sun-400)) 68%, rgb(var(--sun-500)) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    /* Évite que la dernière lettre soit rognée (interlettrage négatif) */
+    padding-right: .08em;
+    margin-right: -.08em;
 }
 
-.caret { color: var(--gold-500); animation: blink 1s step-end infinite; }
+.caret { color: rgb(var(--accent-500)); animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-
-.float-slow   { animation: float 9s ease-in-out infinite; }
-.float-medium { animation: float 7s ease-in-out infinite reverse; }
-.float-fast   { animation: float 5s ease-in-out infinite; }
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50%      { transform: translateY(-18px) rotate(6deg); }
-}
 
 .scroll-indicator {
     position: relative;
     width: 1px;
     height: 48px;
-    background: rgba(255,255,255,.15);
+    background: rgb(var(--ink) / .15);
     overflow: hidden;
 }
 .scroll-indicator::after {
@@ -110,7 +236,7 @@ main > section { overflow-x: clip; }
     position: absolute;
     left: 0; top: -50%;
     width: 100%; height: 50%;
-    background: var(--gold-500);
+    background: linear-gradient(rgb(var(--moon-300)), rgb(var(--sun-500)));
     animation: scroll-down 2s ease-in-out infinite;
 }
 @keyframes scroll-down { to { top: 100%; } }
@@ -123,10 +249,10 @@ main > section { overflow-x: clip; }
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: rgba(5,5,10,.7);
+    background: rgb(var(--night) / .72);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgb(var(--ink) / .06);
     opacity: 0;
     transition: opacity .3s ease;
 }
@@ -136,7 +262,7 @@ main > section { overflow-x: clip; }
 
 .nav-link {
     position: relative;
-    color: rgba(255,255,255,.65);
+    color: rgb(var(--ink) / .65);
     transition: color .2s;
 }
 .nav-link::after {
@@ -144,18 +270,18 @@ main > section { overflow-x: clip; }
     position: absolute;
     left: 0; bottom: -6px;
     width: 100%; height: 1px;
-    background: var(--gold-500);
+    background: linear-gradient(var(--dir-x), rgb(var(--moon-400)), rgb(var(--sun-500)));
     transform: scaleX(0);
     transform-origin: right;
     transition: transform .3s ease;
 }
-.nav-link:hover, .nav-link.active { color: #fff; }
+.nav-link:hover, .nav-link.active { color: rgb(var(--ink)); }
 .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
 
 .burger-line {
     display: block;
     width: 24px; height: 2px;
-    background: #fff;
+    background: rgb(var(--ink));
     border-radius: 2px;
     transition: transform .3s, opacity .3s;
 }
@@ -164,37 +290,127 @@ main > section { overflow-x: clip; }
 .menu-open .burger-line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 .menu-open #mobile-menu { opacity: 1; pointer-events: auto; }
 
+/* ---------- Bascule Soleil / Lune ---------- */
+/* Nuit : un croissant argenté. Jour : l'ombre glisse, le soleil rayonne. */
+.phase-toggle {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--ink) / .14);
+    color: rgb(var(--moon-300));
+    transition: border-color .3s, transform .3s, color .5s;
+}
+.phase-toggle:hover { border-color: rgb(var(--accent-500) / .7); transform: rotate(-12deg); }
+.phase-toggle:focus-visible { outline: 2px solid rgb(var(--accent-500)); outline-offset: 3px; }
+.pt-disc {
+    position: relative;
+    width: 16px; height: 16px;
+    border-radius: 9999px;
+    background: currentColor;
+    overflow: hidden;
+    transition: transform .6s cubic-bezier(.65,0,.35,1);
+}
+.pt-shadow {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgb(var(--night));
+    transform: translate(38%, -22%);
+    transition: transform .6s cubic-bezier(.65,0,.35,1);
+}
+.pt-rays {
+    position: absolute;
+    inset: 5px;
+    border-radius: 9999px;
+    background: repeating-conic-gradient(currentColor 0 7deg, transparent 7deg 45deg);
+    -webkit-mask: radial-gradient(circle, transparent 66%, #000 68% 86%, transparent 88%);
+    mask: radial-gradient(circle, transparent 66%, #000 68% 86%, transparent 88%);
+    opacity: 0;
+    transform: rotate(-60deg) scale(.6);
+    transition: opacity .5s, transform .6s cubic-bezier(.65,0,.35,1);
+}
+[data-theme="day"] .phase-toggle { color: rgb(var(--sun-500)); }
+[data-theme="day"] .pt-disc { transform: scale(.72); }
+[data-theme="day"] .pt-shadow { transform: translate(120%, -120%); }
+[data-theme="day"] .pt-rays { opacity: 1; transform: none; }
+
 .social {
     display: grid;
     place-items: center;
     width: 44px; height: 44px;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.12);
-    color: rgba(255,255,255,.7);
+    border: 1px solid rgb(var(--ink) / .12);
+    color: rgb(var(--ink) / .7);
     transition: all .25s;
 }
-.social:hover { border-color: var(--gold-500); color: var(--gold-300); transform: translateY(-3px); }
+.social:hover { border-color: rgb(var(--accent-500)); color: rgb(var(--accent-300)); transform: translateY(-3px); }
 
 /* ---------- Sections ---------- */
 .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
     font-size: .75rem;
     font-weight: 600;
     letter-spacing: .25em;
     text-transform: uppercase;
-    color: var(--gold-500);
+    color: rgb(var(--accent-500));
 }
+/* Glyphes astraux : ☉ soleil, ☽ lune, éclipse pour le contact */
+.section-label::before {
+    content: "";
+    flex-shrink: 0;
+    width: 11px; height: 11px;
+    border-radius: 9999px;
+}
+.section-label[data-phase="sun"]::before {
+    border: 1.5px solid currentColor;
+    background: radial-gradient(circle, currentColor 0 1.6px, transparent 2px);
+    box-shadow: 0 0 10px rgb(var(--sun-500) / .5);
+}
+.section-label[data-phase="sun"] { color: rgb(var(--sun-500)); }
+.section-label[data-phase="moon"] { color: rgb(var(--moon-400)); }
+.section-label[data-phase="moon"]::before { box-shadow: inset -3.5px 0 0 0 currentColor; transform: rotate(-20deg); }
+.section-label[data-phase="eclipse"]::before {
+    background: rgb(var(--night));
+    box-shadow: 0 0 0 1.5px rgb(var(--moon-400)), 2px 1px 8px rgb(var(--sun-500) / .9);
+}
+
 .section-title {
     margin-top: .75rem;
     font-weight: 300;
     font-size: clamp(2.5rem, 5.5vw, 4rem);
     line-height: 1.05;
     letter-spacing: -0.035em;
-    color: #fff;
+    color: rgb(var(--ink));
+}
+
+/* Horizon entre deux sections : la ligne où le jour rencontre la nuit */
+main > section + section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 50%;
+    width: min(72rem, calc(100% - 3rem));
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(var(--dir-x), transparent, rgb(var(--moon-400) / .35) 30%, rgb(var(--ink) / .12) 50%, rgb(var(--sun-500) / .35) 70%, transparent);
+}
+main > section + section::after {
+    content: "";
+    position: absolute;
+    top: -4px; left: 50%;
+    width: 9px; height: 9px;
+    margin-left: -4.5px;
+    border-radius: 9999px;
+    background: linear-gradient(var(--dir-x), rgb(var(--moon-300)) 50%, rgb(var(--sun-500)) 50%);
+    box-shadow: 0 0 0 4px rgb(var(--night)), 0 0 18px rgb(var(--sun-500) / .4);
 }
 
 .glass {
-    background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
-    border: 1px solid rgba(255,255,255,.08);
+    background: linear-gradient(145deg, rgb(var(--ink) / .06), rgb(var(--ink) / .015));
+    border: 1px solid rgb(var(--ink) / .08);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 }
@@ -203,18 +419,29 @@ main > section { overflow-x: clip; }
     position: absolute;
     width: 480px; height: 480px;
     border-radius: 9999px;
-    background: radial-gradient(circle, rgba(245,197,24,.18), transparent 70%);
+    background: radial-gradient(circle, rgb(var(--halo-sun) / .16), transparent 70%);
     filter: blur(40px);
     pointer-events: none;
 }
+.glow-moon { background: radial-gradient(circle, rgb(var(--halo-moon) / .18), transparent 70%); }
+[data-theme="day"] .glow { opacity: .55; }
+
+/* ---------- Halo de lumière qui suit le pointeur ---------- */
+.lit {
+    --mx: -999px;
+    --my: -999px;
+    position: relative;
+    background-image: radial-gradient(420px circle at var(--mx) var(--my), rgb(var(--accent-500) / .09), transparent 45%);
+}
 
 /* ---------- Centres d'intérêts ---------- */
+/* Les légendes sont posées sur des photos sombres : couleurs fixes */
 .interest {
     position: relative;
     height: 200px;
     overflow: hidden;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid rgb(var(--ink) / .08);
 }
 .interest img {
     position: absolute;
@@ -228,12 +455,12 @@ main > section { overflow-x: clip; }
     position: absolute;
     inset: auto 0 0 0;
     padding: 1.1rem;
-    background: linear-gradient(to top, rgba(5,5,10,.9), transparent);
+    background: linear-gradient(to top, rgba(6,7,13,.9), transparent);
 }
 .interest h4 { color: #fff; font-weight: 600; }
-.interest p  { margin-top: .15rem; font-size: .8rem; color: rgba(255,255,255,.6); }
+.interest p  { margin-top: .15rem; font-size: .8rem; color: rgba(255,255,255,.65); }
 .interest-link { display: block; }
-.interest-arrow { display: inline-block; color: var(--gold-300); transition: transform .3s; }
+.interest-arrow { display: inline-block; color: #ffe08a; transition: transform .3s; }
 .interest-link:hover .interest-arrow { transform: translateX(4px); }
 .interest:hover img { transform: scale(1.08); filter: saturate(1) brightness(1); }
 
@@ -241,37 +468,66 @@ main > section { overflow-x: clip; }
 .card {
     padding: 1.75rem;
     border-radius: 10px;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.08);
-    transition: border-color .3s, transform .3s, background .3s;
+    background-color: rgb(var(--ink) / .03);
+    border: 1px solid rgb(var(--ink) / .08);
+    transition: border-color .3s, transform .3s, background-color .3s;
 }
-.card:hover { border-color: rgba(245,197,24,.5); background: rgba(245,197,24,.06); transform: translateY(-4px); }
-.card h3 { margin-top: 1.25rem; font-weight: 600; color: #fff; }
-.card p  { margin-top: .4rem; font-size: .875rem; color: rgba(255,255,255,.55); }
+.card:hover { border-color: rgb(var(--accent-500) / .45); background-color: rgb(var(--accent-500) / .04); transform: translateY(-4px); }
+.card h3 { margin-top: 1.25rem; font-weight: 600; color: rgb(var(--ink)); }
+.card p  { margin-top: .4rem; font-size: .875rem; color: rgb(var(--ink) / .58); }
 .card-icon, .contact-icon {
     display: grid;
     place-items: center;
     width: 44px; height: 44px;
-    border-radius: 6px;
-    background: rgba(245,197,24,.12);
-    color: var(--gold-400);
+    border-radius: 9999px;
+    background: linear-gradient(var(--dir-diag), rgb(var(--moon-400) / .14), rgb(var(--accent-500) / .16));
+    box-shadow: inset 0 0 0 1px rgb(var(--ink) / .08);
+    color: rgb(var(--accent-400));
     flex-shrink: 0;
 }
-.card-icon svg, .contact-icon svg { width: 22px; height: 22px; }
+.card-icon svg, .contact-icon svg { width: 21px; height: 21px; }
+
+.card-highlight {
+    border-color: rgb(var(--accent-500) / .35);
+    background-color: transparent;
+    background-image:
+        radial-gradient(420px circle at var(--mx) var(--my), rgb(var(--accent-500) / .1), transparent 45%),
+        linear-gradient(145deg, rgb(var(--accent-500) / .12), rgb(var(--moon-400) / .04));
+}
+.stack-title {
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: rgb(var(--ink) / .45);
+}
 
 /* ---------- Parcours ---------- */
+/* Une course du soleil (aujourd'hui) vers les phases de lune (le passé) */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 0; top: .5rem; bottom: 0;
+    width: 1px;
+    background: linear-gradient(rgb(var(--sun-500) / .8), rgb(var(--moon-400) / .45) 45%, rgb(var(--ink) / .06));
+}
 .timeline-item { position: relative; }
 .timeline-item::before {
     content: "";
     position: absolute;
     left: calc(-2rem - 6px);
-    top: .35rem;
-    width: 11px; height: 11px;
+    top: .3rem;
+    width: 12px; height: 12px;
     border-radius: 9999px;
-    background: var(--space-950);
-    border: 2px solid var(--gold-500);
-    box-shadow: 0 0 0 4px rgba(245,197,24,.15);
+    background: rgb(var(--moon-300));
+    box-shadow: inset var(--phase, 0) 0 0 0 rgb(var(--night)), 0 0 0 1px rgb(var(--moon-400) / .6), 0 0 0 5px rgb(var(--night));
 }
+.timeline-item:nth-child(2) { --phase: 2px; }
+.timeline-item:nth-child(3) { --phase: 3.5px; }
+.timeline-item:nth-child(4) { --phase: 5px; }
+.timeline-item:nth-child(5) { --phase: 6.5px; }
+.timeline-item:nth-child(6) { --phase: 8px; }
+.timeline-item:nth-child(7) { --phase: 9.5px; }
 @media (min-width: 640px) {
     .timeline-item::before { left: calc(-3rem - 6px); }
 }
@@ -280,61 +536,50 @@ main > section { overflow-x: clip; }
     font-weight: 600;
     letter-spacing: .15em;
     text-transform: uppercase;
-    color: var(--gold-400);
+    color: rgb(var(--moon-400));
 }
+.timeline-current .timeline-date { color: rgb(var(--sun-400)); }
 .timeline-item h3 {
     margin-top: .4rem;
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.3;
-    color: #fff;
+    color: rgb(var(--ink));
 }
 .timeline-current::before {
-    background: var(--gold-500);
-    box-shadow: 0 0 0 4px rgba(245,197,24,.25), 0 0 20px rgba(245,197,24,.6);
+    background: rgb(var(--sun-500));
+    box-shadow: 0 0 0 4px rgb(var(--sun-500) / .2), 0 0 22px rgb(var(--sun-500) / .7);
 }
-.timeline-place { margin-top: .25rem; color: rgba(255,255,255,.55); }
-
-.card-highlight {
-    border-color: rgba(245,197,24,.35);
-    background: linear-gradient(145deg, rgba(245,197,24,.12), rgba(245,197,24,.02));
-}
-.stack-title {
-    font-size: .7rem;
-    font-weight: 600;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,.45);
-}
+.timeline-place { margin-top: .25rem; color: rgb(var(--ink) / .55); }
 
 /* ---------- Projets ---------- */
 .tag {
     padding: .3rem .8rem;
-    border-radius: 4px;
+    border-radius: 9999px;
     font-size: .75rem;
-    border: 1px solid rgba(255,255,255,.12);
-    color: rgba(255,255,255,.7);
+    border: 1px solid rgb(var(--moon-400) / .3);
+    color: rgb(var(--ink) / .72);
 }
 .tag-gold {
-    border-color: rgba(245,197,24,.45);
-    background: rgba(245,197,24,.08);
-    color: var(--gold-300);
+    border-color: rgb(var(--accent-500) / .45);
+    background: rgb(var(--accent-500) / .08);
+    color: rgb(var(--accent-300));
 }
 
 .project {
     overflow: hidden;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.08);
-    background: var(--space-900);
+    border: 1px solid rgb(var(--ink) / .08);
+    background-color: rgb(var(--night-900));
     transition: border-color .3s, transform .3s;
 }
-.project:hover { border-color: rgba(245,197,24,.45); transform: translateY(-4px); }
+.project:hover { border-color: rgb(var(--accent-500) / .45); transform: translateY(-4px); }
 .project-thumb {
     display: block;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgb(var(--ink) / .06);
 }
 .project-thumb img {
     width: 100%; height: 100%;
@@ -343,29 +588,40 @@ main > section { overflow-x: clip; }
     transition: transform .7s ease;
 }
 .project:hover .project-thumb img { transform: scale(1.04); }
-.project-link { color: var(--gold-300); transition: color .2s; }
-.project-link:hover { color: #fff; }
+.project-link { color: rgb(var(--accent-300)); transition: color .2s; }
+.project-link:hover { color: rgb(var(--ink)); }
 
 .agency {
     padding: 1.25rem 1.4rem;
     border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.08);
-    border-left: 2px solid var(--gold-500);
-    background: rgba(255,255,255,.025);
-    transition: background .3s;
+    border: 1px solid rgb(var(--ink) / .08);
+    background-color: rgb(var(--ink) / .025);
+    transition: background-color .3s, border-color .3s;
 }
-.agency:hover { background: rgba(245,197,24,.06); }
-.agency h4 { font-size: .95rem; font-weight: 600; color: #fff; }
-.agency p  { margin-top: .35rem; font-size: .8rem; line-height: 1.5; color: rgba(255,255,255,.55); }
+/* Liseré mi-lune mi-soleil */
+.agency::after {
+    content: "";
+    position: absolute;
+    left: -1px; top: 14px; bottom: 14px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(rgb(var(--sun-500)), rgb(var(--moon-400)));
+}
+.agency:hover { background-color: rgb(var(--accent-500) / .05); border-color: rgb(var(--accent-500) / .3); }
+.agency h4 { font-size: .95rem; font-weight: 600; color: rgb(var(--ink)); }
+.agency p  { margin-top: .35rem; font-size: .8rem; line-height: 1.5; color: rgb(var(--ink) / .55); }
 
 /* ---------- Contact ---------- */
 /* Pas de backdrop-filter ni de mix-blend-mode ici : combinés à l'image
    et au fond étoilé animé, ils laissaient des résidus de rendu. */
 .contact-card {
     isolation: isolate;
-    background: linear-gradient(145deg, #12121b, #0b0b12);
-    border: 1px solid rgba(255,255,255,.08);
+    background:
+        radial-gradient(ellipse 50% 60% at 100% 0%, rgb(var(--moon-400) / .07), transparent 70%),
+        linear-gradient(145deg, rgb(var(--night-800)), rgb(var(--night-900)));
+    border: 1px solid rgb(var(--ink) / .08);
 }
+[data-theme="day"] .contact-card { box-shadow: 0 40px 80px -50px rgb(var(--ink) / .35); }
 .contact-form { opacity: .35; filter: grayscale(1); user-select: none; }
 .contact-overlay {
     position: absolute;
@@ -377,8 +633,8 @@ main > section { overflow-x: clip; }
     padding: 2rem;
     text-align: center;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(8,8,14,.72);
+    border: 1px solid rgb(var(--ink) / .08);
+    background: rgb(var(--night-900) / .74);
 }
 
 .contact-art {
@@ -387,33 +643,35 @@ main > section { overflow-x: clip; }
     bottom: -5rem;
     width: min(560px, 100%);
     height: auto;
-    opacity: .45;
+    opacity: .5;
     pointer-events: none;
     -webkit-mask-image: radial-gradient(ellipse at 30% 65%, #000 25%, transparent 75%);
     mask-image: radial-gradient(ellipse at 30% 65%, #000 25%, transparent 75%);
 }
+/* De jour, la lune sombre passe « en négatif » : un astre d'albâtre */
+[data-theme="day"] .contact-art { filter: invert(1) hue-rotate(180deg) saturate(.7) contrast(.85); opacity: .55; }
 .field { display: grid; gap: .5rem; }
 .field span {
     font-size: .7rem;
     font-weight: 600;
     letter-spacing: .15em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.5);
+    color: rgb(var(--ink) / .5);
 }
 .field input, .field textarea {
     width: 100%;
     padding: .9rem 1.1rem;
     border-radius: 6px;
-    background: rgba(5,5,10,.5);
-    border: 1px solid rgba(255,255,255,.1);
-    color: #fff;
+    background: rgb(var(--night) / .5);
+    border: 1px solid rgb(var(--ink) / .1);
+    color: rgb(var(--ink));
     outline: none;
     resize: vertical;
     transition: border-color .2s, box-shadow .2s;
 }
 .field input:focus, .field textarea:focus {
-    border-color: var(--gold-500);
-    box-shadow: 0 0 0 4px rgba(245,197,24,.15);
+    border-color: rgb(var(--accent-500));
+    box-shadow: 0 0 0 4px rgb(var(--accent-500) / .15);
 }
 
 /* ---------- Apparition au scroll ---------- */

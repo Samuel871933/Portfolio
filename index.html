@@ -5,11 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samuel RAPPY | Développeur web full-stack</title>
     <meta name="description" content="Portfolio de Samuel RAPPY, développeur web full-stack : boutiques PrestaShop, modules sur-mesure, WordPress, Symfony, Next.js et outils métier.">
-    <link rel="icon" href="assets/img/generated/favicon-sr.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/generated/favicon-sr-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/generated/favicon-sr-16.png">
-    <link rel="icon" type="image/svg+xml" href="assets/img/generated/favicon-sr.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/generated/favicon-sr-180.png">
+    <link rel="icon" href="assets/img/generated/favicon-eclipse.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/generated/favicon-eclipse-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/generated/favicon-eclipse-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/generated/favicon-eclipse-180.png">
+
+    <link rel="canonical" href="https://samuel871933.github.io/Portfolio/">
+
+    <!-- Aperçu de partage (réseaux sociaux, messageries) -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:url" content="https://samuel871933.github.io/Portfolio/">
+    <meta property="og:title" content="Samuel RAPPY | Développeur web full-stack">
+    <meta property="og:description" content="Portfolio de Samuel RAPPY, développeur web full-stack : boutiques PrestaShop, modules sur-mesure, WordPress, Symfony, Next.js et outils métier.">
+    <meta property="og:image" content="https://samuel871933.github.io/Portfolio/assets/img/generated/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Un croissant de lune et une planète dorée de part et d'autre d'une éclipse">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#06070d">
+    <!-- Thème mémorisé appliqué avant le premier rendu (pas de flash) -->
+    <script>
+        try { document.documentElement.dataset.theme = localStorage.getItem('theme') === 'day' ? 'day' : 'night'; } catch (e) {}
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,12 +35,17 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Couleurs branchées sur les variables CSS du thème (Lune / Soleil)
+        const tone = (v) => `rgb(var(${v}) / <alpha-value>)`;
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        space: { 950: '#05050a', 900: '#0a0a12', 800: '#12121d', 700: '#1c1c2b' },
-                        gold: { 300: '#ffe17a', 400: '#ffd23f', 500: '#f5c518', 600: '#c99a00' },
+                        white: tone('--ink'),
+                        onsun: tone('--on-accent'),
+                        space: { 950: tone('--night'), 900: tone('--night-900'), 800: tone('--night-800'), 700: tone('--night-700') },
+                        gold: { 300: tone('--accent-300'), 400: tone('--accent-400'), 500: tone('--accent-500'), 600: tone('--accent-600') },
+                        moon: { 300: tone('--moon-300'), 400: tone('--moon-400'), 500: tone('--moon-500') },
                     },
                     fontFamily: {
                         display: ['Roboto', 'system-ui', 'sans-serif'],
@@ -32,7 +55,7 @@
             },
         };
     </script>
-    <link rel="stylesheet" href="assets/css/style.css?v=4">
+    <link rel="stylesheet" href="assets/css/style.css?v=12">
 </head>
 
 <body class="bg-space-950 font-sans text-white/80 antialiased selection:bg-gold-500/40 selection:text-white">
@@ -47,19 +70,26 @@
                 <span class="font-display text-sm font-medium uppercase tracking-[0.3em] text-white sm:text-base">Samuel <span class="text-gold-300">Rappy</span></span>
             </a>
 
+            <div class="flex items-center gap-3 md:gap-8">
             <ul class="hidden items-center gap-9 text-[11px] font-medium uppercase tracking-[0.22em] md:flex">
                 <li><a href="#apropos" class="nav-link">À propos</a></li>
                 <li><a href="#competences" class="nav-link">Compétences</a></li>
                 <li><a href="#travaux" class="nav-link">Projets</a></li>
                 <li><a href="#parcours" class="nav-link">Parcours</a></li>
-                <li><a href="#contact" class="rounded-md border border-gold-500/60 px-5 py-2 text-gold-300 transition hover:bg-gold-500 hover:text-space-950">Contact</a></li>
+                <li><a href="#contact" class="rounded-md border border-gold-500/60 px-5 py-2 text-gold-300 transition hover:bg-gold-500 hover:text-onsun">Contact</a></li>
             </ul>
+
+            <button id="theme-btn" type="button" class="phase-toggle relative z-50" aria-label="Passer au thème Soleil" title="Soleil / Lune">
+                <span class="pt-rays" aria-hidden="true"></span>
+                <span class="pt-disc" aria-hidden="true"><span class="pt-shadow"></span></span>
+            </button>
 
             <button id="menu-btn" class="relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden" aria-label="Ouvrir le menu" aria-expanded="false">
                 <span class="burger-line"></span>
                 <span class="burger-line"></span>
                 <span class="burger-line"></span>
             </button>
+            </div>
         </nav>
 
         <!-- Menu mobile -->
@@ -76,9 +106,13 @@
 
         <!-- ============ HERO ============ -->
         <section id="accueil" class="relative flex min-h-screen items-center overflow-hidden">
-            <picture class="hero-bg absolute inset-0" aria-hidden="true">
+            <picture class="hero-bg hero-night absolute inset-0" aria-hidden="true">
                 <source media="(max-width: 767px)" srcset="assets/img/generated/hero-960.webp">
                 <img src="assets/img/generated/hero-1672.webp" alt="" width="1672" height="941" fetchpriority="high" decoding="async">
+            </picture>
+            <picture class="hero-bg hero-day absolute inset-0" aria-hidden="true">
+                <source media="(max-width: 767px)" srcset="assets/img/generated/hero-day-960.webp">
+                <img src="assets/img/generated/hero-day-1672.webp" alt="" width="1672" height="941" loading="lazy" decoding="async">
             </picture>
             <div class="absolute inset-0 bg-gradient-to-r from-space-950 via-space-950/80 to-transparent" aria-hidden="true"></div>
             <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-space-950 to-transparent" aria-hidden="true"></div>
@@ -104,7 +138,7 @@
                 </p>
 
                 <div class="reveal mt-10 flex flex-wrap gap-4">
-                    <a href="#contact" class="group inline-flex items-center gap-2 rounded-md bg-gold-500 px-7 py-3.5 text-sm font-semibold text-space-950 transition hover:bg-gold-400">
+                    <a href="#contact" class="group inline-flex items-center gap-2 rounded-md bg-gold-500 px-7 py-3.5 text-sm font-semibold text-onsun transition hover:bg-gold-400">
                         Me contacter
                         <svg class="h-4 w-4 transition group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
@@ -137,7 +171,7 @@
                 <div class="grid items-center gap-16 lg:grid-cols-[0.9fr_1.1fr]">
 
                     <div class="reveal relative mx-auto w-full max-w-sm">
-                        <div class="absolute -inset-4 rounded-xl bg-gradient-to-br from-gold-500/20 via-transparent to-gold-500/5 blur-2xl" aria-hidden="true"></div>
+                        <div class="absolute -inset-4 rounded-xl bg-gradient-to-br from-moon-400/25 via-transparent to-gold-500/25 blur-2xl" aria-hidden="true"></div>
                         <div class="relative overflow-hidden rounded-xl border border-white/10">
                             <img src="assets/img/optimized/profile.webp" alt="Samuel RAPPY" class="aspect-[3/4] w-full object-cover transition duration-700 hover:scale-105" width="600" height="800" decoding="async" loading="lazy">
                         </div>
@@ -148,7 +182,7 @@
                     </div>
 
                     <div>
-                        <p class="section-label reveal">01 — Qui suis-je ?</p>
+                        <p data-phase="sun" class="section-label reveal">01 — Qui suis-je ?</p>
                         <h2 class="section-title reveal">À propos <span class="text-gradient">de moi</span></h2>
                         <p class="reveal mt-6 text-lg leading-relaxed text-white/70">
                             Développeur web full-stack en agence, je conçois des <strong class="text-white">boutiques e&#8209;commerce PrestaShop</strong>,
@@ -211,10 +245,10 @@
 
         <!-- ============ COMPÉTENCES ============ -->
         <section id="competences" class="relative py-28 sm:py-36">
-            <div class="glow left-[-10%] top-1/4" aria-hidden="true"></div>
+            <div class="glow glow-moon left-[-10%] top-1/4" aria-hidden="true"></div>
             <div class="relative mx-auto max-w-6xl px-6">
                 <div class="max-w-2xl">
-                    <p class="section-label reveal">02 — Savoir-faire</p>
+                    <p data-phase="moon" class="section-label reveal">02 — Savoir-faire</p>
                     <h2 class="section-title reveal">Mes <span class="text-gradient">compétences</span></h2>
                     <p class="reveal mt-6 leading-relaxed text-white/60">
                         Une palette complète pour mener un projet web de la maquette à la mise en production, puis le faire vivre.
@@ -223,32 +257,32 @@
 
                 <!-- Expertises -->
                 <div class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="card reveal">
+                    <div class="card lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
                         <h3>Intégration front-end</h3>
                         <p>Interfaces responsives, fidèles aux maquettes, rapides et accessibles.</p>
                     </div>
-                    <div class="card reveal">
+                    <div class="card lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg></span>
                         <h3>Développement back-end</h3>
                         <p>API, logique métier, bases de données et intégrations tierces.</p>
                     </div>
-                    <div class="card reveal">
+                    <div class="card lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg></span>
                         <h3>Développement from scratch</h3>
                         <p>Applications et outils métier sur-mesure, pensés pour durer.</p>
                     </div>
-                    <div class="card reveal">
+                    <div class="card lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg></span>
                         <h3>CMS & e-commerce</h3>
                         <p>PrestaShop, WordPress : thèmes, modules et personnalisations avancées.</p>
                     </div>
-                    <div class="card reveal">
+                    <div class="card lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg></span>
                         <h3>Maintenance & mises à jour</h3>
                         <p>Montées de version, correctifs, sécurité et évolutions continues.</p>
                     </div>
-                    <div class="card card-highlight reveal">
+                    <div class="card card-highlight lit reveal">
                         <span class="card-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg></span>
                         <h3>Intelligence artificielle</h3>
                         <p>L'IA au service du développement : productivité, qualité et automatisation.</p>
@@ -291,7 +325,7 @@
             <div class="relative mx-auto max-w-6xl px-6">
                 <div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
                     <div>
-                        <p class="section-label reveal">03 — Réalisations</p>
+                        <p data-phase="sun" class="section-label reveal">03 — Réalisations</p>
                         <h2 class="section-title reveal">Mes <span class="text-gradient">projets</span></h2>
                     </div>
                     <a href="https://github.com/Samuel871933" target="_blank" rel="noopener" class="reveal inline-flex items-center gap-2 text-sm font-medium text-gold-300 transition hover:text-gold-400">
@@ -302,7 +336,7 @@
 
                 <!-- Projets personnels -->
                 <div class="mt-12 grid gap-6 md:grid-cols-2">
-                    <article class="project reveal group">
+                    <article class="project lit reveal group">
                         <a href="https://quizzdle.com/" target="_blank" rel="noopener" class="project-thumb" aria-label="Ouvrir Quizzdle">
                             <img src="assets/img/optimized/quizzdle.webp" alt="Page d'accueil de Quizzdle" loading="lazy" width="1200" height="750" decoding="async">
                         </a>
@@ -320,7 +354,7 @@
                         </div>
                     </article>
 
-                    <article class="project reveal group">
+                    <article class="project lit reveal group">
                         <a href="https://samuel871933.github.io/Le-Grimoire-GT/" target="_blank" rel="noopener" class="project-thumb" aria-label="Ouvrir Le Grimoire GT">
                             <img src="assets/img/optimized/grimoire.webp" alt="Page d'accueil du Grimoire GT" loading="lazy" width="1200" height="750" decoding="async">
                         </a>
@@ -346,19 +380,19 @@
                     <p class="text-xs text-white/40">Projets clients confidentiels</p>
                 </div>
                 <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <article class="agency reveal">
+                    <article class="agency lit reveal">
                         <h4>Boutiques PrestaShop</h4>
                         <p>Création, refonte et personnalisation de sites e&#8209;commerce.</p>
                     </article>
-                    <article class="agency reveal">
+                    <article class="agency lit reveal">
                         <h4>Modules PrestaShop</h4>
                         <p>Modules sur-mesure, dont certains publiés en open source.</p>
                     </article>
-                    <article class="agency reveal">
+                    <article class="agency lit reveal">
                         <h4>Outils métier</h4>
                         <p>Applications internes développées from scratch.</p>
                     </article>
-                    <article class="agency reveal">
+                    <article class="agency lit reveal">
                         <h4>Sites WordPress</h4>
                         <p>Intégration, extensions, maintenance et mises à jour.</p>
                     </article>
@@ -368,11 +402,12 @@
 
         <!-- ============ PARCOURS ============ -->
         <section id="parcours" class="relative py-28 sm:py-36">
-            <div class="mx-auto max-w-6xl px-6">
-                <p class="section-label reveal">04 — Trajectoire</p>
+            <div class="eclipse right-[8%] top-1/3 hidden lg:block" aria-hidden="true"></div>
+            <div class="relative mx-auto max-w-6xl px-6">
+                <p data-phase="moon" class="section-label reveal">04 — Trajectoire</p>
                 <h2 class="section-title reveal">Mon <span class="text-gradient">parcours</span></h2>
 
-                <ol class="relative mt-16 space-y-12 border-l border-white/10 pl-8 sm:ml-4 sm:pl-12">
+                <ol class="timeline relative mt-16 space-y-12 pl-8 sm:ml-4 sm:pl-12">
                     <li class="timeline-item timeline-current reveal">
                         <span class="timeline-date">2023 — Aujourd'hui</span>
                         <h3>Développeur web full-stack · CDI</h3>
@@ -423,7 +458,7 @@
 
                     <div class="relative grid gap-12 lg:grid-cols-2">
                         <div>
-                            <p class="section-label reveal">05 — Contact</p>
+                            <p data-phase="eclipse" class="section-label reveal">05 — Contact</p>
                             <h2 class="section-title reveal">Travaillons <span class="text-gradient">ensemble</span></h2>
                             <p class="reveal mt-6 max-w-md leading-relaxed text-white/60">
                                 Une boutique à lancer, un module à développer, un outil métier à imaginer ? Parlons-en, je vous réponds rapidement.
@@ -471,7 +506,7 @@
                                     <span>Message</span>
                                     <textarea name="message" rows="5" required></textarea>
                                 </label>
-                                <button type="submit" class="mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-gold-500 px-7 py-4 text-sm font-semibold text-space-950 transition hover:bg-gold-400">
+                                <button type="submit" class="mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-gold-500 px-7 py-4 text-sm font-semibold text-onsun transition hover:bg-gold-400">
                                     Envoyer le message
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
                                 </button>
@@ -486,7 +521,7 @@
                                     Contactez-moi directement sur mes réseaux.
                                 </p>
                                 <div class="mt-6 flex flex-wrap justify-center gap-3">
-                                    <a href="https://fr.linkedin.com/in/samuel-rappy-674a94280" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-space-950 transition hover:bg-gold-400">
+                                    <a href="https://fr.linkedin.com/in/samuel-rappy-674a94280" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-onsun transition hover:bg-gold-400">
                                         LinkedIn ↗
                                     </a>
                                     <a href="https://github.com/Samuel871933" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-md border border-white/15 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-gold-500/60 hover:text-gold-300">
@@ -504,7 +539,7 @@
     <!-- ============ FOOTER ============ -->
     <footer class="border-t border-white/5 py-10">
         <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-white/40 sm:flex-row">
-            <p>© <span id="year"></span> Samuel RAPPY — <a href="https://www.samuelrappy.fr" class="transition hover:text-gold-300">www.samuelrappy.fr</a></p>
+            <p>© <span id="year"></span> Samuel RAPPY — <a href="https://samuel871933.github.io/Portfolio/" class="transition hover:text-gold-300">samuel871933.github.io/Portfolio</a></p>
             <a href="#accueil" class="inline-flex items-center gap-2 transition hover:text-gold-300">
                 Retour en haut
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
@@ -512,6 +547,6 @@
         </div>
     </footer>
 
-    <script src="assets/js/main.js?v=3"></script>
+    <script src="assets/js/main.js?v=7"></script>
 </body>
 </html>
