@@ -35,9 +35,12 @@ main > section { overflow-x: clip; }
 @keyframes twinkle { from { opacity: .5; } to { opacity: 1; } }
 
 /* ---------- Hero ---------- */
+/* Zoom avant / arrière très lent, en boucle, centré sur la planète */
 .hero-bg {
     pointer-events: none;
-    animation: drift 30s ease-in-out infinite alternate;
+    transform-origin: 70% 50%;
+    animation: drift 40s ease-in-out infinite;
+    will-change: transform;
 }
 .hero-bg img {
     width: 100%;
@@ -45,10 +48,14 @@ main > section { overflow-x: clip; }
     object-fit: cover;
     object-position: 70% center;
 }
+
 @media (max-width: 767px) {
     .hero-bg img { object-position: 62% center; opacity: .7; }
 }
-@keyframes drift { from { transform: scale(1); } to { transform: scale(1.08); } }
+@keyframes drift {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+}
 
 .section-title .text-gradient { font-weight: 600; }
 
