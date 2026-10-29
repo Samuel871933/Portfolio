@@ -25,16 +25,30 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#06070d">
     <!-- Sécurité : ressources du site, plus Three.js (jsDelivr) et l'importmap ci-dessous (empreinte sha256) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-pB7CIuMjC+zIn6IjvzIB7G1rNiBRW3FCmIS7DXjD+3k='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/three@0.160.0/ 'sha256-gWH33/8LaWs+muC553Sfjs0LdLRSosBBaMsfWOsgEaE='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
 
     <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/css/cosmos.css?v=16">
+    <link rel="stylesheet" href="assets/css/cosmos.css?v=19">
     <script type="importmap">
         { "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        },
+          "integrity": {
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js": "sha384-8/hf5tabFfIo0BPku31TKUvGIKpWGYaMwNtlSNqNyZzXgZCMd4lnOGWbJElML9dv",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/objects/Lensflare.js": "sha384-McwXEA4EDojgzCQcJ9fjlub6ZnIGIZWThLy8NoTq7AqMOTnxor8PfPBA2tKLFgTJ",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js": "sha384-L+Ns9skCAqjab7aG8LH5VLknBCoENW7p37sOj39jnITwlWZFabWc29JwzgYf6ygy",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/MaskPass.js": "sha384-SDM80tiGflO8UDV/QzR/mASjcc/+wF7KfRVFNHJUIPcTctwoPI8GoWVTlccZw7V4",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/OutputPass.js": "sha384-RJJc+pg+Ue2ZwXlf8n78cPHMiHrqfr+AxxabF5vkXMXjNPF6nSUoqb20IQXkMo6c",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/Pass.js": "sha384-gSqIFh8vMmp1veyOysIS3KPVUl/A5JPefYvW4b89OeYeW0bwkrjN7qcC1h0XJK/K",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/RenderPass.js": "sha384-LwKrkOBAkmQ2KT4cv6P6q9Rb9L01GIFU34Zp16tGWZoBnrVuujfjpYZb7OxEMb0J",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/ShaderPass.js": "sha384-zetU6HhR/vTtgSvnS9DE+GQPZhVT/ZOSLa/1+DSM6rkM9hvBgQWr9bCEosZt93ch",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js": "sha384-R734/7SvtqjjeteDKG4qcQA0adDCZ1ZcKfYUZsbVr9qqHGlgSXH9eNN4b3NIgwuc",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/shaders/CopyShader.js": "sha384-kzVlcj2amFaRNIWZ5zE0PmIN+QTNWWvrgKk31S8N/7w0nf7Qq3xqxHRLbD2UPPSl",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/shaders/LuminosityHighPassShader.js": "sha384-621kiA/kIdX8rtH6VU6+SwMVx+B8g7MQ6x0fei5dZVX3CQZSLkpOlglIk9sxE+/g",
+            "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/shaders/OutputShader.js": "sha384-fT4woAJJtXcAxElHG1cGfIZkiSxaj7u+24LHlfNVDZZ9aSjZvr2emMGPmcD9eF0V"
         } }
     </script>
 </head>
@@ -70,7 +84,7 @@
         <!-- ============ ACCUEIL · sur Terre, de nuit, face au Soleil ============ -->
         <section id="accueil" data-p="0" class="ch ch-hero">
             <p class="kicker fx">Bordeaux et alentours</p>
-            <h1 class="hero-name fx"><span>Samuel</span><span class="sun">Rappy</span></h1>
+            <h1 class="hero-name fx"><span>Samuel</span><span class="sun">RAPPY</span></h1>
             <div class="hero-foot fx line">
                 <p class="hero-role">
                     Développeur web full-stack · E-commerce & sur-mesure.
@@ -190,7 +204,7 @@
                             <p>Créateur de CV et de lettres de motivation en ligne, avec modèles personnalisables et export PDF. Sans inscription : vos documents restent dans votre navigateur, sans collecte ni conservation de vos données personnelles sur un serveur.</p>
                             <div class="work-links"><a href="https://samuel871933.github.io/pdf-studio/" target="_blank" rel="noopener" class="link-line link-gold work-main">Visiter le site ↗</a></div>
                         </div>
-                        <figure class="work-shot"><img src="assets/img/optimized/pdf-studio.png" alt="Éditeur PDF Studio avec un modèle de CV et ses outils de personnalisation" loading="lazy" width="1440" height="900" decoding="async"></figure>
+                        <figure class="work-shot"><img src="assets/img/optimized/pdf-studio.webp" alt="Éditeur PDF Studio avec un modèle de CV et ses outils de personnalisation" loading="lazy" width="1440" height="900" decoding="async"></figure>
                     </article>
                     <article class="work fx line">
                         <div>
@@ -262,7 +276,7 @@
     </main>
     <div class="work-preview" aria-hidden="true"><a class="work-preview-shot" target="_blank" rel="noopener" tabindex="-1"><img alt=""></a><div class="work-links"></div></div>
 
-    <script src="assets/js/cosmos-ui.js?v=4"></script>
+    <script src="assets/js/cosmos-ui.js?v=5"></script>
     <script type="module" src="assets/js/cosmos.js?v=9"></script>
 </body>
 </html>

@@ -99,19 +99,6 @@ const glowSprite = (map, color, scale) => {
     return s;
 };
 
-// Lueur sur les bords d'une sphère (atmosphère, onde de choc)
-function fresnelMat(rgb, power, side = THREE.FrontSide) {
-    return new THREE.ShaderMaterial({
-        uniforms: { uAlpha: { value: 1 } },
-        vertexShader: `varying float vF;
-            void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vec3 n = normalize(normalMatrix * normal);
-            vF = pow(1. - abs(dot(n, normalize(-mv.xyz))), ${power.toFixed(1)}); gl_Position = projectionMatrix * mv; }`,
-        fragmentShader: `uniform float uAlpha; varying float vF;
-            void main(){ gl_FragColor = vec4(vec3(${rgb.map(v => v.toFixed(2))}) * vF, vF * uAlpha); }`,
-        side, ...additive,
-    });
-}
-
 // Faisceau conique qui s'estompe vers la pointe et sur les bords (jets de la supernova)
 function beamMat(rgb) {
     return new THREE.ShaderMaterial({

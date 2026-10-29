@@ -86,8 +86,11 @@ for (const work of document.querySelectorAll('.work')) {
         previewImg.src = img.currentSrc || img.src;
         previewShot.href = work.querySelector('.work-main').href;
         // Les liens du projet sous la capture : l'aperçu masque ceux de la ligne
-        previewLinks.innerHTML = work.querySelector('.work-links').innerHTML;
-        for (const a of previewLinks.querySelectorAll('a')) a.tabIndex = -1;
+        previewLinks.replaceChildren(...[...work.querySelectorAll('.work-links a')].map((a) => {
+            const copy = a.cloneNode(true);
+            copy.tabIndex = -1;
+            return copy;
+        }));
         preview.classList.add('on');
     };
     work.addEventListener('mouseenter', show);

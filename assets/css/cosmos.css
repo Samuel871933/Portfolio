@@ -168,13 +168,16 @@ main { position: relative; z-index: 2; overflow-x: clip; }
 @keyframes beacon { to { box-shadow: 0 0 0 10px rgb(var(--gold) / 0); } }
 .hero-name {
     margin-top: 1.6rem;
-    font-size: clamp(2.8rem, 10vw, 8.8rem); font-weight: 300; line-height: .9; letter-spacing: -.045em;
+    /* Mêmes tailles et graisses que la version classique (text-6xl / sm:text-8xl / lg:text-[7.5rem]) */
+    font-size: 3.75rem; font-weight: 300; line-height: 1; letter-spacing: -.04em;
     color: rgb(var(--ink));
     text-shadow: 0 6px 60px rgb(0 0 0 / .7);
 }
 .hero-name span { display: block; }
+@media (min-width: 640px) { .hero-name { font-size: 6rem; } }
+@media (min-width: 1024px) { .hero-name { font-size: 7.5rem; } }
 .hero-name .sun {
-    font-weight: 500;
+    font-weight: 600;
     /* Reflet qui passe lentement sur l'or */
     background: linear-gradient(100deg, rgb(var(--gold)) 0%, rgb(var(--gold-hi)) 20%, rgb(255 246 214) 28%, rgb(var(--gold-hi)) 36%, rgb(var(--gold)) 55%, rgb(200 120 40) 100%) 0 0 / 250% 100%;
     -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -371,6 +374,9 @@ main { position: relative; z-index: 2; overflow-x: clip; }
     .agency { grid-template-columns: repeat(2, 1fr); }
     .agency li:nth-child(3) { padding-left: 0; border-left: 0; }
     .col-right { margin-right: 0; }
+    /* Le nom, le filet et le texte se resserrent */
+    .hero-foot { margin-top: 1.5rem; padding-top: 1.2rem; gap: 1.5rem; }
+    .actions { gap: 1.2rem 2rem; }
 }
 @media (max-width: 767px) {
     .bar { padding: 1.1rem var(--gutter); background: linear-gradient(rgb(var(--night) / .85), transparent); }
