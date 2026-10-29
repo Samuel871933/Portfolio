@@ -492,8 +492,8 @@ function frameOpening() {
 function moonOrbit(p, out) {
     // Fin d'orbite côté Soleil et de biais : la Lune ne repasse pas devant la Terre au décrochage
     const phi = lerp(moonPhi0, 7.15, smooth(seg(p, .2, .4)));
-    // Au départ, à hauteur de caméra : la Lune et le Soleil alignés sur l'horizontale, puis elle s'élève pour le ballet
-    return out.copy(E).addScaledVector(toSun, Math.cos(phi) * MOON_ORBIT).addScaledVector(side, Math.sin(phi) * MOON_ORBIT).addScaledVector(UP, .4 * smooth(seg(p, 0, .25)));
+    // Au départ, la Lune au-dessus de l'horizon du Soleil : les deux astres en diagonale, puis elle se cale pour le ballet
+    return out.copy(E).addScaledVector(toSun, Math.cos(phi) * MOON_ORBIT).addScaledVector(side, Math.sin(phi) * MOON_ORBIT).addScaledVector(UP, lerp(.7, .4, smooth(seg(p, 0, .25))));
 }
 
 // Chute de la Lune : courbe de Bézier de son orbite jusqu'au bord du Soleil
@@ -508,7 +508,7 @@ function groundFrame(d, x, y, out) {
 
 // ---------- Caméra : courbe continue (Catmull-Rom) à travers des positions-clés dynamiques ----------
 const ORIGIN = V(0, 0, 0);
-const ground = () => [E.clone().addScaledVector(toSun, 1.25), V(0, -7, 0).addScaledVector(side, (ORBIT - 1.25) * Math.tan(sunYaw))];
+const ground = () => [E.clone().addScaledVector(toSun, 1.25), V(0, -3, 0).addScaledVector(side, (ORBIT - 1.25) * Math.tan(sunYaw))];
 // Même cadrage que ground, mais au sommet de la Terre : on y arrive par-dessus, sans la traverser
 const landing = () => [E.clone().addScaledVector(UP, 1.25), V(0, -7, 0)];
 const KEYS = [
