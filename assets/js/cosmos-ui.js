@@ -71,6 +71,35 @@ function update() {
     }
 }
 
+// ---------- Projets : la capture survolée s'affiche au centre de l'écran, cliquable ----------
+// Élément unique hors de <main> : les lignes ont un transform (fondus), qui casserait un position: fixed
+const preview = document.querySelector('.work-preview');
+const previewImg = preview.querySelector('img');
+const previewShot = preview.querySelector('.work-preview-shot');
+const previewLinks = preview.querySelector('.work-links');
+let hideTimer = 0;
+const hidePreview = () => { hideTimer = setTimeout(() => preview.classList.remove('on'), 80); };
+for (const work of document.querySelectorAll('.work')) {
+    const show = () => {
+        clearTimeout(hideTimer);
+        const img = work.querySelector('.work-shot img');
+        previewImg.src = img.currentSrc || img.src;
+        previewShot.href = work.querySelector('.work-main').href;
+        // Les liens du projet sous la capture : l'aperçu masque ceux de la ligne
+        previewLinks.innerHTML = work.querySelector('.work-links').innerHTML;
+        for (const a of previewLinks.querySelectorAll('a')) a.tabIndex = -1;
+        preview.classList.add('on');
+    };
+    work.addEventListener('mouseenter', show);
+    work.addEventListener('focusin', show);
+    work.addEventListener('mouseleave', hidePreview);
+    work.addEventListener('focusout', hidePreview);
+}
+preview.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+preview.addEventListener('mouseleave', hidePreview);
+// On défile : l'aperçu ne reste que si la souris est encore sur un projet
+addEventListener('scroll', () => { if (!document.querySelector('.work:hover')) preview.classList.remove('on'); }, { passive: true });
+
 let queued = 0;
 const queue = () => { if (!queued) queued = requestAnimationFrame(() => { queued = 0; update(); }); };
 addEventListener('scroll', queue, { passive: true });

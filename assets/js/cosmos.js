@@ -250,10 +250,14 @@ class Plume {
     }
 }
 
+// Tirage à graine fixe (Park-Miller) : la même scène à chaque chargement
+const seededRandom = (s) => () => (s = (s * 16807) % 2147483647) / 2147483647;
+
 // Roche sculptée : relief fbm + cratères avec rebord. Sphère indexée → pas de fissures entre triangles.
 function rockGeometry(w, seed) {
     const g = new THREE.SphereGeometry(1, w, Math.round(w * .66)), pos = g.attributes.position, v = new THREE.Vector3();
-    const craters = Array.from({ length: 12 }, () => ({ dir: V(0, 0, 0).randomDirection(), r: .12 + Math.random() * .4, depth: .03 + Math.random() * .09 }));
+    const rand = seededRandom(Math.round(seed * 1000));
+    const craters = Array.from({ length: 12 }, () => ({ dir: V(rand() * 2 - 1, rand() * 2 - 1, rand() * 2 - 1).normalize(), r: .12 + rand() * .4, depth: .03 + rand() * .09 }));
     for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i);
         let r = 1 + .9 * (fbm3(v.x * .9 + seed, v.y * .9, v.z * .9, 3) - .5) + .25 * (fbm3(v.x * 2.6 + seed, v.y * 2.6, v.z * 2.6, 3) - .5) + .07 * (fbm3(v.x * 8 + seed, v.y * 8, v.z * 8, 2) - .5);
@@ -280,10 +284,8 @@ const corona = glowSprite(glowTexture('rgba(255,190,90,.5)', 'rgba(200,110,30,.1
 sun.add(corona);
 
 const flareGlow = glowTexture('rgba(255,240,200,1)', 'rgba(255,200,120,.2)');
-const flareRing = glowTexture('rgba(255,210,140,.25)', 'rgba(236,178,60,.08)');
 const flare = new Lensflare();
 flare.addElement(new LensflareElement(flareGlow, 220, 0, new THREE.Color(1, .85, .6)));
-for (const [size, dist] of [[60, .4], [90, .6], [40, .75], [140, 1]]) flare.addElement(new LensflareElement(flareRing, size, dist));
 sun.add(flare);
 scene.add(sun);
 
@@ -444,10 +446,11 @@ tex('asteroid-map.webp', t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repe
 
 const SHARDS = 80;
 const shards = new THREE.InstancedMesh(rockGeometry(20, 4.2), rockMat, SHARDS);
+const srand = seededRandom(7);
 const shardData = Array.from({ length: SHARDS }, () => ({
-    pos: V(0, 0, 0).randomDirection().multiplyScalar(30 + Math.random() * 120),
-    rot: new THREE.Euler(Math.random() * 6, Math.random() * 6, 0),
-    size: .2 + Math.random() ** 3 * 1.4,
+    pos: V(srand() * 2 - 1, srand() * 2 - 1, srand() * 2 - 1).normalize().multiplyScalar(30 + srand() * 120),
+    rot: new THREE.Euler(srand() * 6, srand() * 6, 0),
+    size: .2 + srand() ** 3 * 1.4,
 }));
 scene.add(shards);
 
@@ -697,8 +700,8 @@ function frame() {
     dust.material.opacity = residue * .35;
     dust.rotation.y = time * .006;
     ambient.intensity = .04 + residue * .25;
-    // Les débris se dissipent pendant le retour : au sol, il ne reste que l'astéroïde majeur et les météores
-    const debris = residue * (1 - seg(p, .88, .94));
+    // Les débris restent jusqu'au bout, même hors champ : l'astéroïde majeur est l'un d'eux
+    const debris = residue;
     shards.visible = debris > 0;
     if (shards.visible) {
         shardData.forEach((s, i) => {
@@ -725,10 +728,11 @@ function frame() {
     const back = seg(p, .9, .93);
     const ta = seg(p, .92, 1);
     const astPath = (s, out) => groundFrame(lerp(130, 40, easeOut(s)), lerp(-.25, .12, s), lerp(.1, -.03, s), out);
-    asteroid.visible = ta > 0;
+    // Il flotte parmi les débris dès qu'ils apparaissent, puis se détache du champ vers la Terre
+    asteroid.visible = residue > 0;
     if (asteroid.visible) {
         astPath(ta, asteroid.position);
-        asteroid.scale.set(6, 3.8, 4.4);
+        asteroid.scale.set(6, 3.8, 4.4).multiplyScalar(residue);
         asteroid.rotation.set(time * .05, time * .08, .4);
         rimLight.target.position.copy(asteroid.position);
         // Lumière rasante de côté : le terminateur révèle le relief et les cratères
