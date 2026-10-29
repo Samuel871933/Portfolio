@@ -1,0 +1,397 @@
+/* ==========================================================================
+   Portfolio « Éclipse »
+   La scène 3D (cosmos.js) est le décor ; le portfolio s'y pose comme un générique de film :
+   pas de cartes ni de panneaux, du texte dans l'espace, des filets d'or, une trajectoire pour naviguer.
+   ========================================================================== */
+
+/* ---------- Roboto hébergée localement (police variable, graisses 300 à 600) ---------- */
+@font-face {
+    font-family: 'Roboto'; font-style: normal; font-weight: 300 600; font-display: swap;
+    src: url(../fonts/roboto-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Roboto'; font-style: normal; font-weight: 300 600; font-display: swap;
+    src: url(../fonts/roboto-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+    font-family: 'Roboto'; font-style: normal; font-weight: 300 600; font-display: swap;
+    src: url(../fonts/roboto-symbols.woff2) format('woff2');
+    unicode-range: U+2190-2199;
+}
+
+:root {
+    --night: 6 7 13;
+    --ink: 236 238 245;
+    --gold: 236 188 60;
+    --gold-hi: 255 224 138;
+    --silver: 183 193 214;
+    --hair: rgb(var(--ink) / .12);
+    --gutter: clamp(1.25rem, 5vw, 4.5rem);
+    color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: rgb(var(--night)); overflow-x: clip; }
+body {
+    margin: 0;
+    background: rgb(var(--night));
+    color: rgb(var(--ink) / .72);
+    font: 300 1rem/1.65 'Roboto', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, p, ol, ul, dl, dd, figure { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; height: auto; }
+strong { color: rgb(var(--ink)); font-weight: 500; }
+::selection { background: rgb(var(--gold) / .4); color: #fff; }
+:focus-visible { outline: 1px solid rgb(var(--gold)); outline-offset: 4px; }
+
+/* ---------- Décor ---------- */
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+/* Premier plan « vu du sol » : image si fournie, sinon crête dessinée en CSS */
+.horizon { position: fixed; left: 0; right: 0; bottom: 0; height: 50vh; pointer-events: none; will-change: transform, opacity; }
+/* Crête vers 35 % de l'image : cadrage un peu sous le haut pour la garder entière avec un peu de sol */
+.horizon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+.horizon.noimg::before {
+    content: ""; position: absolute; inset: 0; background: rgb(4 4 8);
+    clip-path: polygon(0 62%, 8% 55%, 15% 60%, 24% 44%, 31% 52%, 40% 48%, 47% 58%, 56% 40%, 63% 50%, 72% 46%, 80% 57%, 88% 49%, 100% 56%, 100% 100%, 0 100%);
+    filter: drop-shadow(0 -1px 0 rgb(236 188 60 / .7));
+}
+#flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 3; }
+.hint {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 4;
+    font-size: 11px; letter-spacing: .4em; text-transform: uppercase; opacity: .6; pointer-events: none; transition: opacity .6s;
+}
+
+/* ---------- Barre du haut ---------- */
+.bar {
+    position: fixed; inset: 0 0 auto; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.6rem var(--gutter);
+    pointer-events: none;
+}
+.bar > * { pointer-events: auto; }
+.brand { font-size: .8rem; font-weight: 500; letter-spacing: .38em; text-transform: uppercase; color: rgb(var(--ink)); }
+.brand b { font-weight: 500; color: rgb(var(--gold-hi)); }
+.bar-cta {
+    font-size: .7rem; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; color: rgb(var(--gold-hi));
+    padding-bottom: .3rem; border-bottom: 1px solid rgb(var(--gold) / .5); transition: border-color .3s, color .3s;
+}
+.bar-cta:hover { color: #fff; border-color: #fff; }
+.bar-links { display: flex; align-items: center; gap: 2.2rem; white-space: nowrap; }
+.bar-alt { color: rgb(var(--ink) / .7); border-color: rgb(var(--ink) / .25); }
+
+/* ---------- Trajectoire : navigation par chapitres ---------- */
+.rail {
+    position: fixed; z-index: 10; right: var(--gutter); top: 50%; transform: translateY(-50%);
+    height: min(46vh, 22rem);
+}
+.rail ol { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+.rail ol::before, .rail-fill {
+    content: ""; position: absolute; right: 3.5px; top: 4px; bottom: 4px; width: 1px; background: var(--hair);
+}
+.rail-fill {
+    bottom: auto; height: calc((100% - 8px) * var(--fill, 0));
+    background: linear-gradient(rgb(var(--silver)), rgb(var(--gold)));
+    box-shadow: 0 0 10px rgb(var(--gold) / .6);
+}
+.rail a { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 1rem; height: 8px; }
+.rail a::after {
+    content: ""; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: rgb(var(--night)); box-shadow: inset 0 0 0 1px rgb(var(--ink) / .45);
+    transition: background .4s, box-shadow .4s, transform .4s;
+}
+.rail a.passed::after { background: rgb(var(--silver)); box-shadow: none; }
+.rail a.active::after { background: rgb(var(--gold-hi)); box-shadow: 0 0 0 4px rgb(var(--gold) / .18), 0 0 14px rgb(var(--gold)); transform: scale(1.15); }
+.rail-label {
+    font-size: .65rem; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; white-space: nowrap;
+    color: rgb(var(--ink) / .8); opacity: 0; transform: translateX(6px); transition: opacity .3s, transform .3s;
+}
+.rail a:hover .rail-label, .rail a:focus-visible .rail-label, .rail a.active .rail-label { opacity: 1; transform: none; }
+.rail a.active .rail-label { color: rgb(var(--gold-hi)); }
+
+/* ---------- Chapitres ---------- */
+/* clip : l'ombre douce des colonnes déborde volontairement, sans élargir la page */
+main { position: relative; z-index: 2; overflow-x: clip; }
+.ch { position: relative; padding: 32vh var(--gutter); }
+/* Le contenu s'arrête avant la trajectoire de droite (points + libellé du chapitre actif) */
+@media (min-width: 768px) { .ch { padding-right: calc(var(--gutter) + 9rem); } }
+.interlude { height: 340vh; }
+.interlude-short { height: 180vh; }
+
+/* Colonne de texte, posée sur une ombre douce qui la détache de la scène (pas de cadre) */
+.col { position: relative; isolation: isolate; max-width: 46rem; }
+.col::before {
+    content: ""; position: absolute; z-index: -1; inset: -18% -40% -18% -30%;
+    background: radial-gradient(closest-side, rgb(var(--night) / .82), rgb(var(--night) / .5) 55%, transparent);
+    pointer-events: none;
+}
+.col-right { margin-left: auto; }
+.col-wide { max-width: 72rem; margin: 0 auto; }
+.col-wide::before { inset: -8% -12%; }
+
+.label {
+    display: flex; align-items: center; gap: .9rem;
+    font-size: .68rem; font-weight: 500; letter-spacing: .34em; text-transform: uppercase; color: rgb(var(--gold-hi));
+}
+.label::before { content: ""; width: 2.5rem; height: 1px; background: linear-gradient(90deg, transparent, rgb(var(--gold))); }
+.label-moon { color: rgb(var(--silver)); }
+.label-moon::before { background: linear-gradient(90deg, transparent, rgb(var(--silver))); }
+
+.title {
+    margin-top: 1.4rem;
+    font-size: clamp(2.6rem, 6vw, 4.8rem); font-weight: 300; line-height: 1; letter-spacing: -.035em;
+    color: rgb(var(--ink));
+}
+.title em { font-style: normal; font-weight: 500; color: rgb(var(--gold-hi)); }
+.lede { margin-top: 2.2rem; font-size: clamp(1.1rem, 1.6vw, 1.32rem); line-height: 1.6; color: rgb(var(--ink) / .85); }
+.body { margin-top: 1.2rem; font-size: .95rem; color: rgb(var(--ink) / .6); }
+.small-title {
+    margin-top: 4rem; margin-bottom: 1.2rem;
+    font-size: .66rem; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: rgb(var(--ink) / .45);
+}
+
+/* ---------- Accueil : le nom posé sur le sol, sous le Soleil ---------- */
+.ch-hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 0; padding-bottom: 14vh; }
+.kicker {
+    display: inline-flex; align-items: center; gap: .8rem;
+    font-size: .68rem; font-weight: 500; letter-spacing: .34em; text-transform: uppercase; color: rgb(var(--ink) / .7);
+}
+.kicker::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: rgb(var(--gold-hi));
+    box-shadow: 0 0 0 0 rgb(var(--gold) / .6); animation: beacon 2.4s ease-out infinite;
+}
+@keyframes beacon { to { box-shadow: 0 0 0 10px rgb(var(--gold) / 0); } }
+.hero-name {
+    margin-top: 1.6rem;
+    font-size: clamp(2.8rem, 10vw, 8.8rem); font-weight: 300; line-height: .9; letter-spacing: -.045em;
+    color: rgb(var(--ink));
+    text-shadow: 0 6px 60px rgb(0 0 0 / .7);
+}
+.hero-name span { display: block; }
+.hero-name .sun {
+    font-weight: 500;
+    /* Reflet qui passe lentement sur l'or */
+    background: linear-gradient(100deg, rgb(var(--gold)) 0%, rgb(var(--gold-hi)) 20%, rgb(255 246 214) 28%, rgb(var(--gold-hi)) 36%, rgb(var(--gold)) 55%, rgb(200 120 40) 100%) 0 0 / 250% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: sheen 9s ease-in-out infinite;
+    /* Le dégradé ne peint que la boîte de ligne : sans cette marge, les jambages (y, p) sont coupés */
+    padding-bottom: .14em; margin-bottom: -.14em;
+}
+@keyframes sheen { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+.hero-foot {
+    margin-top: 3rem; padding-top: 1.6rem;
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 2rem;
+}
+.hero-role { font-size: clamp(1rem, 1.4vw, 1.15rem); color: rgb(var(--ink) / .85); }
+.hero-role > span { display: block; margin-top: .35rem; color: rgb(var(--ink) / .5); }
+#typed { color: rgb(var(--gold-hi)); font-weight: 400; }
+.caret { display: inline-block; width: 1px; height: 1.05em; margin-left: 3px; vertical-align: -.15em; background: rgb(var(--gold)); animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.actions { display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; }
+.link-line {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-size: .72rem; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: rgb(var(--ink));
+    padding-bottom: .45rem;
+    /* Soulignement : un trait d'or balaie le trait de base au survol */
+    background: linear-gradient(rgb(var(--gold-hi)), rgb(var(--gold-hi))) 0 100% / 0 1px no-repeat,
+                linear-gradient(rgb(var(--ink) / .28), rgb(var(--ink) / .28)) 0 100% / 100% 1px no-repeat;
+    transition: color .3s, background-size .6s cubic-bezier(.22, 1, .36, 1), letter-spacing .6s cubic-bezier(.22, 1, .36, 1);
+}
+.link-line:hover { color: rgb(var(--gold-hi)); background-size: 100% 1px, 100% 1px; letter-spacing: .34em; }
+.link-gold { color: rgb(var(--gold-hi)); }
+
+/* ---------- À propos ---------- */
+/* Portrait en éclipse : un anneau et un satellite qui tourne autour */
+.portrait { position: relative; width: 5.5rem; height: 5.5rem; margin-bottom: 2.6rem; }
+.portrait img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: grayscale(.35) contrast(1.05); }
+.portrait::before {
+    content: ""; position: absolute; inset: -10px; border-radius: 50%;
+    border: 1px solid rgb(var(--gold) / .35);
+}
+.portrait::after {
+    content: ""; position: absolute; inset: -10px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 0, rgb(var(--gold-hi)) 0 3px, transparent 4px);
+    animation: orbit 14s linear infinite;
+}
+@keyframes orbit { to { transform: rotate(1turn); } }
+
+.facts { margin-top: 3rem; display: grid; grid-template-columns: repeat(3, 1fr); }
+.facts div { padding: 1.2rem 1rem 0 0; }
+.facts div + div { padding-left: 1rem; border-left: 1px solid var(--hair); }
+.facts dt { font-size: .6rem; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: rgb(var(--ink) / .45); }
+.facts dd { margin-top: .4rem; font-size: clamp(1.05rem, 2vw, 1.5rem); font-weight: 400; letter-spacing: -.02em; color: rgb(var(--ink)); }
+.facts dd b { font-weight: 500; color: rgb(var(--gold-hi)); }
+
+.rows li { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem; padding: .95rem 0; }
+.rows li:last-child { border-bottom: 1px solid var(--hair); }
+.rows h3, .rows h4 { font-size: .95rem; font-weight: 500; color: rgb(var(--ink)); }
+.rows p { font-size: .9rem; color: rgb(var(--ink) / .58); }
+.rows a { transition: color .3s; }
+.rows a:hover { color: rgb(var(--gold-hi)); }
+
+/* ---------- Compétences : numérotées comme des orbites ---------- */
+.skills { margin-top: 3rem; counter-reset: skill; }
+.skills li { counter-increment: skill; display: grid; grid-template-columns: 2.6rem 1fr; padding: 1.1rem 0; transition: padding-left .5s cubic-bezier(.22, 1, .36, 1); }
+.skills li:hover { padding-left: .5rem; }
+.skills li:last-child { border-bottom: 1px solid var(--hair); }
+.skills li::before { content: counter(skill, decimal-leading-zero); font-size: .7rem; font-weight: 500; letter-spacing: .1em; color: rgb(var(--gold)); padding-top: .25rem; }
+.skills h3 { font-size: 1.05rem; font-weight: 500; color: rgb(var(--ink)); }
+.skills p { margin-top: .2rem; font-size: .9rem; color: rgb(var(--ink) / .58); }
+.skills .star::before { color: rgb(var(--gold-hi)); text-shadow: 0 0 10px rgb(var(--gold)); }
+.skills .star h3 { color: rgb(var(--gold-hi)); }
+
+.stack { margin-top: 2.6rem; display: grid; gap: .9rem; }
+.stack div { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem; font-size: .9rem; }
+.stack dt { font-size: .62rem; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: rgb(var(--ink) / .45); padding-top: .2rem; }
+.stack dd { color: rgb(var(--ink) / .85); }
+.stack dd span + span::before { content: "·"; margin: 0 .6rem; color: rgb(var(--gold)); }
+
+/* ---------- Projets : un générique dans le vide ---------- */
+.head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1.5rem; }
+.works { counter-reset: work; }
+.work {
+    counter-increment: work; position: relative;
+    display: grid; grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.1fr); gap: 1.5rem 2.5rem; align-items: start;
+    padding: 2.4rem 0;
+}
+.work:last-child { border-bottom: 1px solid var(--hair); }
+.work::before { content: counter(work, decimal-leading-zero); font-size: .75rem; font-weight: 500; letter-spacing: .1em; color: rgb(var(--gold) / .7); padding-top: .9rem; transition: color .4s, text-shadow .4s; }
+.work:hover::before { color: rgb(var(--gold-hi)); text-shadow: 0 0 12px rgb(var(--gold)); }
+.work h3 { font-size: clamp(2rem, 4.2vw, 3.4rem); font-weight: 300; line-height: 1; letter-spacing: -.035em; color: rgb(var(--ink)); transition: color .4s, translate .6s cubic-bezier(.22, 1, .36, 1); }
+.work:hover h3 { translate: .5rem 0; }
+.work-meta { display: block; margin-top: .9rem; font-size: .62rem; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: rgb(var(--ink) / .45); }
+.work-meta b { font-weight: 500; color: rgb(var(--gold-hi)); }
+.work-text p { font-size: .95rem; color: rgb(var(--ink) / .62); }
+.work-text p a { color: rgb(var(--gold-hi)); }
+.work-links { margin-top: 1.3rem; display: flex; flex-wrap: wrap; gap: 1.6rem; }
+.work-shot { grid-column: 2 / -1; overflow: hidden; border-radius: 4px; border: 1px solid var(--hair); }
+.work-shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; }
+.work:hover h3 { color: rgb(var(--gold-hi)); }
+/* Toute la ligne mène au site : le lien principal s'étend sur le projet, les autres liens restent au-dessus */
+.work-main::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.work-text p a, .work-links a:not(.work-main) { position: relative; z-index: 2; }
+/* Souris : la capture flotte à côté du titre au survol, comme un astre qui passe */
+@media (hover: hover) and (min-width: 1024px) {
+    .work-shot {
+        position: absolute; z-index: 1; right: 3rem; top: 50%; width: 26rem; pointer-events: none;
+        opacity: 0; transform: translate(2rem, -50%) rotate(2deg) scale(.96);
+        transition: opacity .5s, transform .7s cubic-bezier(.22, 1, .36, 1);
+        box-shadow: 0 30px 80px -20px rgb(0 0 0 / .9), 0 0 60px -10px rgb(var(--gold) / .25);
+    }
+    .work:hover .work-shot, .work:focus-within .work-shot { opacity: 1; transform: translate(0, -50%) rotate(-1.5deg); }
+    .work:hover .work-text, .work:focus-within .work-text { opacity: .08; }
+    .work-text { transition: opacity .4s; }
+}
+
+.agency { display: grid; grid-template-columns: repeat(4, 1fr); }
+.agency li { padding: 1.2rem 1.4rem 0 0; }
+.agency li + li { padding-left: 1.4rem; border-left: 1px solid var(--hair); }
+.agency h4 { font-size: .95rem; font-weight: 500; color: rgb(var(--ink)); }
+.agency p { margin-top: .3rem; font-size: .85rem; color: rgb(var(--ink) / .55); }
+.note { font-size: .7rem; letter-spacing: .1em; color: rgb(var(--ink) / .4); }
+
+/* ---------- Parcours : une trajectoire ---------- */
+.path { margin-top: 3rem; position: relative; }
+/* La trajectoire se trace au défilement (--draw, piloté par cosmos-ui.js) */
+.path::before { content: ""; position: absolute; left: 7.5rem; top: .5rem; bottom: .5rem; width: 1px; background: linear-gradient(rgb(var(--gold)), rgb(var(--silver) / .5) 40%, var(--hair)); transform: scaleY(var(--draw, 1)); transform-origin: top; }
+.path li { position: relative; display: grid; grid-template-columns: 7.5rem 1fr; gap: 0 2rem; padding-bottom: 2.1rem; }
+.path li::before {
+    content: ""; position: absolute; left: calc(7.5rem - 3px); top: .45rem; width: 7px; height: 7px; border-radius: 50%;
+    background: rgb(var(--night)); box-shadow: inset 0 0 0 1px rgb(var(--ink) / .25);
+    transition: background .5s, box-shadow .5s;
+}
+.path li.reached::before { background: rgb(var(--silver)); box-shadow: 0 0 8px rgb(var(--silver) / .6); }
+.path li.now.reached::before, .path li.now::before { background: rgb(var(--gold-hi)); box-shadow: 0 0 0 4px rgb(var(--gold) / .18), 0 0 14px rgb(var(--gold)); }
+.path time { font-size: .62rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: rgb(var(--ink) / .45); padding-top: .25rem; text-align: right; padding-right: 1rem; }
+.path li.now time { color: rgb(var(--gold-hi)); }
+.path h3 { font-size: 1.05rem; font-weight: 500; line-height: 1.35; color: rgb(var(--ink)); }
+.path .where { margin-top: .2rem; font-size: .85rem; color: rgb(var(--silver) / .8); }
+.path .what { margin-top: .4rem; font-size: .88rem; color: rgb(var(--ink) / .55); }
+
+/* ---------- Contact : sur le nouvel horizon ---------- */
+.ch-end { padding-bottom: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; }
+.contact { text-align: center; max-width: 52rem; margin: 0 auto; }
+.contact .label { justify-content: center; }
+.contact .label::after { content: ""; width: 2.5rem; height: 1px; background: linear-gradient(90deg, rgb(var(--gold)), transparent); }
+.contact .title { font-size: clamp(3rem, 9vw, 7.5rem); }
+.contact .lede { margin-left: auto; margin-right: auto; max-width: 34rem; }
+.channels { margin-top: 3.5rem; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.channels a { display: block; padding: 1.6rem 1rem; transition: background .4s; }
+.channels a + a { border-left: 1px solid var(--hair); }
+.channels small { display: block; font-size: .6rem; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; color: rgb(var(--ink) / .45); }
+.channels span { display: block; margin-top: .5rem; font-size: 1.15rem; font-weight: 400; color: rgb(var(--ink)); transition: color .3s; }
+.channels a:hover { background: radial-gradient(closest-side, rgb(var(--gold) / .12), transparent); }
+.channels a:hover span { color: rgb(var(--gold-hi)); }
+.place { margin-top: 1.6rem; font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: rgb(var(--ink) / .5); }
+.foot {
+    margin-top: 16vh; padding: 1.6rem 0 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;
+    font-size: .72rem; letter-spacing: .08em; color: rgb(var(--ink) / .4);
+}
+.foot a:hover { color: rgb(var(--gold-hi)); }
+
+/* ---------- Animations ---------- */
+.small-title h3 { font: inherit; }
+/* Apparition / disparition au défilement (pilotées par cosmos-ui.js) */
+.fx { will-change: opacity, transform; }
+
+/* Filets qui se dessinent de gauche à droite à l'entrée dans l'écran (.in posé par cosmos-ui.js) */
+.line { position: relative; }
+.line::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--hair);
+    transform: scaleX(0); transform-origin: left; transition: transform 1.4s cubic-bezier(.22, 1, .36, 1) var(--d, 0s);
+}
+.line.in::after { transform: none; }
+.label::before { transform: scaleX(0); transform-origin: right; transition: transform 1.2s cubic-bezier(.22, 1, .36, 1) .1s; }
+.label.in::before, .label.in::after { transform: none; }
+.contact .label::after { transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(.22, 1, .36, 1) .1s; }
+
+/* Titres révélés par le bas, comme un astre qui se lève sur l'horizon */
+.rise { clip-path: inset(-10% -5% 100% -5%); translate: 0 .45em; transition: clip-path 1.2s cubic-bezier(.22, 1, .36, 1) var(--d, 0s), translate 1.2s cubic-bezier(.22, 1, .36, 1) var(--d, 0s); }
+.rise.in { clip-path: inset(-10% -5% -15% -5%); translate: none; }
+.hero-foot { --d: .5s; }
+
+/* ---------- Petits écrans ---------- */
+@media (max-width: 1023px) {
+    .work { grid-template-columns: 2.6rem minmax(0, 1fr); }
+    .work-text { grid-column: 2; }
+    .agency { grid-template-columns: repeat(2, 1fr); }
+    .agency li:nth-child(3) { padding-left: 0; border-left: 0; }
+    .col-right { margin-right: 0; }
+}
+@media (max-width: 767px) {
+    .bar { padding: 1.1rem var(--gutter); background: linear-gradient(rgb(var(--night) / .85), transparent); }
+    .brand { font-size: .7rem; letter-spacing: .3em; }
+    .bar-links { gap: 1.2rem; }
+    .wide-only { display: none; }
+    .bar-cta { letter-spacing: .2em; }
+    /* La trajectoire passe à l'horizontale, en bas */
+    .rail { top: auto; bottom: 1.1rem; right: 50%; transform: translateX(50%); height: auto; width: min(70vw, 16rem); }
+    .rail ol { flex-direction: row; }
+    .rail ol::before, .rail-fill { top: 3.5px; bottom: auto; left: 4px; right: 4px; width: auto; height: 1px; }
+    .rail-fill { right: auto; width: calc((100% - 8px) * var(--fill, 0)); height: 1px; background: linear-gradient(90deg, rgb(var(--silver)), rgb(var(--gold))); }
+    .rail-label { display: none; }
+    .hint { bottom: 3.2rem; }
+    .ch { padding-top: 26vh; padding-bottom: 26vh; }
+    .col::before { inset: -10% -20%; }
+    .rows li, .stack div { grid-template-columns: 1fr; gap: .15rem; }
+    .path::before { left: 3px; }
+    .path li { grid-template-columns: 1fr; padding-left: 1.6rem; }
+    .path li::before { left: 0; }
+    .path time { text-align: left; padding: 0 0 .3rem; }
+    .channels { grid-template-columns: 1fr; }
+    .channels a + a { border-left: 0; border-top: 1px solid var(--hair); }
+    .agency { grid-template-columns: 1fr; }
+    .agency li, .agency li + li { padding: 1rem 0; border-left: 0; border-bottom: 1px solid var(--hair); }
+    .foot { justify-content: center; text-align: center; margin-bottom: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rise { clip-path: none; translate: none; }
+    .line::after, .label::before, .contact .label::after { transform: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samuel RAPPY | Développeur web full-stack</title>
+    <meta name="description" content="Portfolio de Samuel RAPPY, développeur web full-stack : boutiques PrestaShop, modules sur-mesure, WordPress, Symfony, Next.js et outils métier.">
+    <link rel="icon" href="assets/img/generated/favicon-eclipse.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/generated/favicon-eclipse-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/generated/favicon-eclipse-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/generated/favicon-eclipse-180.png">
+
+    <meta name="robots" content="noindex">
+
+    <!-- Aperçu de partage (réseaux sociaux, messageries) -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:url" content="https://samuel871933.github.io/Portfolio/">
+    <meta property="og:title" content="Samuel RAPPY | Développeur web full-stack">
+    <meta property="og:description" content="Portfolio de Samuel RAPPY, développeur web full-stack : boutiques PrestaShop, modules sur-mesure, WordPress, Symfony, Next.js et outils métier.">
+    <meta property="og:image" content="https://samuel871933.github.io/Portfolio/assets/img/generated/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Un croissant de lune et une planète dorée de part et d'autre d'une éclipse">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#06070d">
+    <!-- Sécurité : ressources du site, plus Three.js (jsDelivr) et l'importmap ci-dessous (empreinte sha256) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-pB7CIuMjC+zIn6IjvzIB7G1rNiBRW3FCmIS7DXjD+3k='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+
+    <link rel="preload" href="assets/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/css/cosmos.css?v=12">
+    <script type="importmap">
+        { "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        } }
+    </script>
+</head>
+<body>
+    <!-- Décor : l'histoire avance avec le défilement, chaque chapitre en fixe le moment (data-p) -->
+    <canvas id="scene" aria-label="Animation : la Lune percute le Soleil, supernova, puis retour sur Terre" role="img"></canvas>
+    <div class="horizon" id="horizon-night" aria-hidden="true"><img src="assets/img/cosmos/horizon-night.webp" alt=""></div>
+    <div class="horizon" id="horizon-after" aria-hidden="true"><img src="assets/img/cosmos/horizon-after.webp" alt=""></div>
+    <div id="flash" aria-hidden="true"></div>
+    <div class="hint" id="hint" aria-hidden="true">Défiler ↓</div>
+
+    <header class="bar">
+        <a href="#accueil" class="brand">Samuel <b>Rappy</b></a>
+        <div class="bar-links">
+            <a href="index.html" class="bar-cta bar-alt"><span class="wide-only">Version </span>classique</a>
+            <a href="#contact" class="bar-cta">Contact</a>
+        </div>
+    </header>
+
+    <nav class="rail" aria-label="Chapitres">
+        <span class="rail-fill" aria-hidden="true"></span>
+        <ol>
+            <li><a href="#accueil"><span class="rail-label">Accueil</span></a></li>
+            <li><a href="#apropos"><span class="rail-label">À propos</span></a></li>
+            <li><a href="#competences"><span class="rail-label">Compétences</span></a></li>
+            <li><a href="#travaux"><span class="rail-label">Projets</span></a></li>
+            <li><a href="#parcours"><span class="rail-label">Parcours</span></a></li>
+            <li><a href="#contact"><span class="rail-label">Contact</span></a></li>
+        </ol>
+    </nav>
+
+    <main>
+        <!-- ============ ACCUEIL · sur Terre, de nuit, face au Soleil ============ -->
+        <section id="accueil" data-p="0" class="ch ch-hero">
+            <p class="kicker fx">Bordeaux et alentours</p>
+            <h1 class="hero-name fx"><span>Samuel</span><span class="sun">Rappy</span></h1>
+            <div class="hero-foot fx line">
+                <p class="hero-role">
+                    Développeur web full-stack · E-commerce & sur-mesure.
+                    <span>Je conçois et développe <span id="typed" data-words='["des boutiques PrestaShop.", "des modules sur-mesure.", "des outils métier.", "des sites WordPress.", "des applications Next.js."]'></span><span class="caret" aria-hidden="true"></span></span>
+                </p>
+                <div class="actions">
+                    <a href="#contact" class="link-line link-gold">Me contacter →</a>
+                    <a href="assets/cv/CV_SAMUEL_RAPPY_CDA.pdf" download="CV_SAMUEL_RAPPY_CDA" class="link-line">Télécharger mon CV ↓</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ À PROPOS · le décollage ============ -->
+        <section id="apropos" data-p=".08" class="ch">
+            <div class="col">
+                <div class="portrait fx"><img src="assets/img/optimized/profile.webp" alt="Samuel RAPPY" width="600" height="800" decoding="async" loading="lazy"></div>
+                <p class="label fx">01 — Qui suis-je ?</p>
+                <h2 class="title fx rise">À propos <em>de moi</em></h2>
+                <p class="lede fx">
+                    Développeur web full-stack en agence, je conçois des <strong>boutiques e&#8209;commerce PrestaShop</strong>,
+                    des <strong>modules sur-mesure</strong>, des <strong>sites WordPress</strong>
+                    et des <strong>outils métier</strong> qui simplifient le quotidien des entreprises.
+                </p>
+                <p class="body fx">
+                    De l'intégration front au back-end, du développement from scratch à la maintenance d'applications en production,
+                    j'accompagne les projets sur toute leur durée de vie. J'intègre l'IA à ma façon de travailler pour livrer plus vite,
+                    sans rien céder sur la qualité du code.
+                </p>
+                <p class="body fx">
+                    Reconverti après un parcours dans le sport et l'éducation, j'en ai gardé l'essentiel&nbsp;:
+                    l'esprit d'équipe, la pédagogie et le goût du travail bien fait.
+                </p>
+                <dl class="facts fx line">
+                    <div><dt>Expérience</dt><dd>Depuis <b>2021</b></dd></div>
+                    <div><dt>Spécialité</dt><dd>E&#8209;commerce</dd></div>
+                    <div><dt>Profil</dt><dd>Full-stack</dd></div>
+                </dl>
+                <h3 class="small-title fx">En dehors du code</h3>
+                <ul class="rows">
+                    <li class="fx line"><h4>Sport</h4><p>Ancien étudiant en STAPS</p></li>
+                    <li class="fx line"><h4><a href="#travaux">Projets perso →</a></h4><p>Toujours un side project en cours</p></li>
+                    <li class="fx line"><h4>Culture</h4><p>Cinéma, art</p></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============ COMPÉTENCES · le ballet Terre-Lune ============ -->
+        <section id="competences" data-p=".22" class="ch">
+            <div class="col">
+                <p class="label label-moon fx">02 — Savoir-faire</p>
+                <h2 class="title fx rise">Mes <em>compétences</em></h2>
+                <p class="lede fx">Une palette complète pour mener un projet web de la maquette à la mise en production, puis le faire vivre.</p>
+                <ol class="skills">
+                    <li class="fx line"><div><h3>Intégration front-end</h3><p>Interfaces responsives, fidèles aux maquettes, rapides et accessibles.</p></div></li>
+                    <li class="fx line"><div><h3>Développement back-end</h3><p>API, logique métier, bases de données et intégrations tierces.</p></div></li>
+                    <li class="fx line"><div><h3>Développement from scratch</h3><p>Applications et outils métier sur-mesure, pensés pour durer.</p></div></li>
+                    <li class="fx line"><div><h3>CMS & e-commerce</h3><p>PrestaShop, WordPress : thèmes, modules et personnalisations avancées.</p></div></li>
+                    <li class="fx line"><div><h3>Maintenance & mises à jour</h3><p>Montées de version, correctifs, sécurité et évolutions continues.</p></div></li>
+                    <li class="fx line star"><div><h3>Intelligence artificielle</h3><p>L'IA au service du développement : productivité, qualité et automatisation.</p></div></li>
+                </ol>
+                <dl class="stack">
+                    <div class="fx"><dt>Frameworks & runtimes</dt><dd><span>Symfony</span><span>Next.js</span><span>Node.js</span></dd></div>
+                    <div class="fx"><dt>CMS & e-commerce</dt><dd><span>PrestaShop</span><span>WordPress</span></dd></div>
+                    <div class="fx"><dt>Langages</dt><dd><span>PHP</span><span>JavaScript</span><span>HTML</span><span>CSS</span></dd></div>
+                </dl>
+            </div>
+        </section>
+
+        <!-- Entracte : la Lune tombe dans le Soleil, supernova -->
+        <div class="interlude" data-p=".36" aria-hidden="true"></div>
+
+        <!-- ============ PROJETS · le vide, l'étoile à neutrons ============ -->
+        <section id="travaux" data-p=".64" class="ch">
+            <div class="col col-wide">
+                <div class="head-row">
+                    <div>
+                        <p class="label fx">03 — Réalisations</p>
+                        <h2 class="title fx rise">Mes <em>projets</em></h2>
+                    </div>
+                    <a href="https://github.com/Samuel871933" target="_blank" rel="noopener" class="link-line link-gold fx">Voir mon GitHub ↗</a>
+                </div>
+
+                <h3 class="small-title fx">Réalisations personnelles</h3>
+                <div class="works">
+                    <article class="work fx line">
+                        <div>
+                            <h3>Quizzdle</h3>
+                            <span class="work-meta">Perso · En ligne · <b>10k+ users</b></span>
+                        </div>
+                        <div class="work-text">
+                            <p>Jeu de devinettes quotidien sur des dizaines d'univers : modes multi, duel et classé, classements, récompenses, site bilingue FR / EN. Réalisé en coopération avec <a href="https://fr.linkedin.com/in/th%C3%A9o-l-arbalestrier-b5159b1b7" target="_blank" rel="noopener">Théo L'Arbalestrier</a>.</p>
+                            <div class="work-links"><a href="https://quizzdle.com/" target="_blank" rel="noopener" class="link-line link-gold work-main">Visiter le site ↗</a></div>
+                        </div>
+                        <figure class="work-shot"><img src="assets/img/optimized/quizzdle.webp" alt="Page d'accueil de Quizzdle" loading="lazy" width="1200" height="750" decoding="async"></figure>
+                    </article>
+                    <article class="work fx line">
+                        <div>
+                            <h3>PrestaBook</h3>
+                            <span class="work-meta">Perso · Open source</span>
+                        </div>
+                        <div class="work-text">
+                            <p>Base de connaissances PrestaShop : requêtes SQL, générateur d'exports configurable et notes techniques, filtrables par besoin et par version (1.6 à 9).</p>
+                            <div class="work-links">
+                                <a href="https://samuel871933.github.io/prestabook/" target="_blank" rel="noopener" class="link-line link-gold work-main">Visiter le site ↗</a>
+                                <a href="https://github.com/Samuel871933/prestabook" target="_blank" rel="noopener" class="link-line">Code source ↗</a>
+                            </div>
+                        </div>
+                        <figure class="work-shot"><img src="assets/img/optimized/prestabook.webp" alt="Base de connaissances PrestaBook avec ses fiches de requêtes SQL classées par besoin" loading="lazy" width="1440" height="900" decoding="async"></figure>
+                    </article>
+                    <article class="work fx line">
+                        <div>
+                            <h3>PDF Studio</h3>
+                            <span class="work-meta">Perso · En ligne</span>
+                        </div>
+                        <div class="work-text">
+                            <p>Créateur de CV et de lettres de motivation en ligne, avec modèles personnalisables et export PDF. Sans inscription : vos documents restent dans votre navigateur, sans collecte ni conservation de vos données personnelles sur un serveur.</p>
+                            <div class="work-links"><a href="https://samuel871933.github.io/pdf-studio/" target="_blank" rel="noopener" class="link-line link-gold work-main">Visiter le site ↗</a></div>
+                        </div>
+                        <figure class="work-shot"><img src="assets/img/optimized/pdf-studio.png" alt="Éditeur PDF Studio avec un modèle de CV et ses outils de personnalisation" loading="lazy" width="1440" height="900" decoding="async"></figure>
+                    </article>
+                    <article class="work fx line">
+                        <div>
+                            <h3>Le Grimoire GT</h3>
+                            <span class="work-meta">Perso · Open source</span>
+                        </div>
+                        <div class="work-text">
+                            <p>Bibliothèque communautaire de scripts pour Guerre Tribale : recherche instantanée, scripts documentés et guides d'installation en français.</p>
+                            <div class="work-links">
+                                <a href="https://samuel871933.github.io/Le-Grimoire-GT/" target="_blank" rel="noopener" class="link-line link-gold work-main">Visiter le site ↗</a>
+                                <a href="https://github.com/Samuel871933/Le-Grimoire-GT" target="_blank" rel="noopener" class="link-line">Code source ↗</a>
+                            </div>
+                        </div>
+                        <figure class="work-shot"><img src="assets/img/optimized/grimoire.webp" alt="Page d'accueil du Grimoire GT" loading="lazy" width="1200" height="750" decoding="async"></figure>
+                    </article>
+                </div>
+
+                <div class="head-row small-title fx">
+                    <h3>Réalisations en agence</h3>
+                    <p class="note">Projets clients confidentiels</p>
+                </div>
+                <ul class="agency fx line">
+                    <li><h4>Boutiques PrestaShop</h4><p>Création, refonte et personnalisation de sites e&#8209;commerce.</p></li>
+                    <li><h4>Modules PrestaShop</h4><p>Modules sur-mesure, dont certains publiés en open source.</p></li>
+                    <li><h4>Outils métier</h4><p>Applications internes développées from scratch.</p></li>
+                    <li><h4>Sites WordPress</h4><p>Intégration, extensions, maintenance et mises à jour.</p></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============ PARCOURS · les résidus ============ -->
+        <section id="parcours" data-p=".77" class="ch">
+            <div class="col col-right">
+                <p class="label label-moon fx">04 — Trajectoire</p>
+                <h2 class="title fx rise">Mon <em>parcours</em></h2>
+                <ol class="path">
+                    <li class="now fx"><time>2023 — Aujourd'hui</time><div><h3>Développeur web full-stack · CDI</h3><p class="where">Agence web</p><p class="what">Boutiques PrestaShop, modules sur-mesure, sites WordPress, outils métier, maintenance et évolutions.</p></div></li>
+                    <li class="fx"><time>Sept. 2022 — 2023</time><div><h3>Licence professionnelle DAWIN · Alternance</h3><p class="where">Université de Bordeaux</p><p class="what">Un an de formation en alternance, entre cours à l'université et projets en entreprise.</p></div></li>
+                    <li class="fx"><time>2022</time><div><h3>Développeur web · CDD</h3><p class="where">Agence web</p><p class="what">Première expérience en agence, jusqu'en septembre 2022, à la sortie de l'AFPA.</p></div></li>
+                    <li class="fx"><time>2021</time><div><h3>Titre professionnel Concepteur Développeur d'Applications</h3><p class="where">AFPA de Bègles</p></div></li>
+                    <li class="fx"><time>2018 — 2020</time><div><h3>Assistant d'éducation</h3><p class="where">Lycée Danton (Brive) · Collège Gaucelm Faidit (Uzerche)</p></div></li>
+                    <li class="fx"><time>2015 — 2018</time><div><h3>Entraîneur de football</h3><p class="where">ASPTT Limoges Football Club</p></div></li>
+                    <li class="fx"><time>2014 — 2019</time><div><h3>Licence Sciences de l'Éducation · L2 STAPS · Bac S</h3><p class="where">Université de Limoges · Lycée Georges Cabanis, Brive</p></div></li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Entracte : retour sur Terre, l'astéroïde et les météores -->
+        <div class="interlude interlude-short" data-p=".86" aria-hidden="true"></div>
+
+        <!-- ============ CONTACT · le nouvel horizon ============ -->
+        <section id="contact" data-p=".97" class="ch ch-end">
+            <div class="col contact">
+                <p class="label fx">05 — Contact</p>
+                <h2 class="title fx rise">Travaillons <em>ensemble</em></h2>
+                <p class="lede fx">Une boutique à lancer, un module à développer, un outil métier à imaginer ? Parlons-en, je vous réponds rapidement.</p>
+                <div class="channels fx">
+                    <a href="https://fr.linkedin.com/in/samuel-rappy-674a94280" target="_blank" rel="noopener"><small>LinkedIn</small><span>samuel-rappy ↗</span></a>
+                    <a href="https://github.com/Samuel871933" target="_blank" rel="noopener"><small>GitHub</small><span>Samuel871933 ↗</span></a>
+                    <a href="assets/cv/CV_SAMUEL_RAPPY_CDA.pdf" download="CV_SAMUEL_RAPPY_CDA"><small>CV</small><span>Télécharger ↓</span></a>
+                </div>
+                <p class="place fx">Bordeaux et alentours</p>
+            </div>
+            <footer class="foot">
+                <p>© <span id="year"></span> Samuel RAPPY</p>
+                <a href="#accueil">Retour en haut ↑</a>
+            </footer>
+        </section>
+    </main>
+
+    <script src="assets/js/cosmos-ui.js?v=2"></script>
+    <script type="module" src="assets/js/cosmos.js?v=5"></script>
+</body>
+</html>
